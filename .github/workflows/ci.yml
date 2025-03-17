@@ -1,0 +1,52 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build-test:
+        name: 🔨 Build & Test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout repository
+              uses: actions/checkout@v4
+
+            - name: 🏗 Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+
+            - name: 📦 Install PNPM
+              run: npm install -g pnpm
+
+            - name: 📦 Install dependencies
+              run: pnpm install
+
+            - name: 🏗 Build frontend & backend
+              run: pnpm run build
+
+            - name: ✅ Run lint checks
+              run: pnpm run lint
+
+            - name: 🚀 Notify Discord on success
+              if: success()
+              run: |
+                  curl -H "Content-Type: application/json" \
+                       -X POST \
+                       -d '{"content": "✅ **PC Remote Build & Test Passed!** 🎉"}' \
+                       ${{ secrets.DISCORD_WEBHOOK }}
+
+            - name: ❌ Notify Discord on failure
+              if: failure()
+              run: |
+                  curl -H "Content-Type: application/json" \
+                       -X POST \
+                       -d '{"content": "🚨 **PC Remote Build & Test Failed!** ❌"}' \
+                       ${{ secrets.DISCORD_WEBHOOK }}

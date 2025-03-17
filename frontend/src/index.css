@@ -1,68 +1,145 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+	color-scheme: light dark;
+	color: rgba(255, 255, 255, 0.87);
+	background-color: #242424;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+	width: 400px;
+	max-width: 90vw;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	background: #1e1e1e;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+	font-weight: 500;
+	color: #646cff;
+	text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+	color: #535bf2;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	padding: 0;
+	margin: 0;
+	background-color: #181818;
+	color: #c3f4f5;
+	font-family: 'Arial', sans-serif;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+.message {
+	width: 100%;
+	padding: 0.75rem;
+	margin-bottom: 1rem;
+	font-size: 1.2rem;
+	background: #292929;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	justify-content: center;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	gap: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: 8px;
+	background: linear-gradient(135deg, #292929, #1c1c1c);
+	color: #c3f4f5;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+button:active {
+	transform: scale(0.95);
+	box-shadow: none;
+}
+button::before {
+	content: '';
+	position: absolute;
+	inset: -2px;
+	border-radius: 10px;
+	background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+	opacity: 0;
+	transition: opacity 0.3s ease-in-out;
 }
 button:hover {
-  border-color: #646cff;
+	background: linear-gradient(135deg, #404040, #282828);
+	transform: translateY(-3px); /* ✅ Smooth lift effect */
+	box-shadow: 0 6px 10px rgba(255, 255, 255, 0.15);
+}
+button:hover::before {
+	opacity: 1;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+	outline: 4px auto -webkit-focus-ring-color;
+}
+button svg {
+	width: 20px;
+	height: 20px;
 }
 
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+	:root {
+		color: #213547;
+		background-color: #c3f4f5;
+	}
+	a:hover {
+		color: #747bff;
+	}
+	button {
+		background-color: #c3f4f5;
+	}
+}
+
+@media (max-width: 600px) {
+	.button-container {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	button {
+		width: 100%;
+		justify-content: center;
+	}
 }
