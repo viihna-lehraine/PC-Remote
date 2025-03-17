@@ -28,7 +28,7 @@ const App = () => {
 	return (
 		<div>
 			<h1>PC Remote</h1>
-			<p>Last message: {message}</p>
+			<p className="message">Last message: {message}</p>
 			<div className="button-container">
 				<button onClick={() => sendCommand('toggle')}>▶️⏸ Play/Pause</button>
 				<button onClick={() => sendCommand('volume/up')}>🔊 Volume Up</button>
