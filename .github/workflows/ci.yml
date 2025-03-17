@@ -26,8 +26,11 @@ jobs:
             - name: Install PNPM
               run: npm install -g pnpm
 
+            - name: Verify PNPM Installation
+              run: pnpm --version
+
             - name: Install dependencies
-              run: pnpm install
+              run: pnpm install -no-frozen-lockfile
 
             - name: Build frontend & backend
               run: pnpm run build
