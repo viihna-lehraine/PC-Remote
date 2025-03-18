@@ -7,6 +7,13 @@ export default defineConfig({
 		cors: true,
 		host: '0.0.0.0',
 		port: 3070,
+		proxy: {
+			'/api': {
+				target: 'http://localhost:3050',
+				changeOrigin: true,
+				secure: false
+			}
+		},
 		strictPort: true
 	}
 });
