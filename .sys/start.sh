@@ -6,7 +6,7 @@ LOGDIR="/home/viihna/Projects/pc_remote/logs/sysd"
 ARCHIVEDIR="$LOGDIR/archive"
 mkdir -p "$LOGDIR" "$ARCHIVEDIR"
 
-LOGNUM=$(ls "$LOGDIR"/pc-remote-*.log 2>/dev/null | awk -F'[-.]' '{print $(NF-1)}' | sort -n | tail -1)
+LOGNUM=$(find "$LOGDIR" -maxdepth 1 -type f -name 'pc-remote-*.log' 2>/dev/null | awk -F'[-.]' '{print $(NF-1)}' | sort -n | tail -1)
 LOGNUM=$((LOGNUM + 1))
 
 LOGFILE="$LOGDIR/pc-remote-$LOGNUM.log"
@@ -26,10 +26,9 @@ cd "/home/viihna/Projects/pc_remote" || {
 	exit 1
 }
 
-LOGCOUNT=$(ls "$LOGDIR"/pc-remote-*.log 2>/dev/null | wc -l)
+LOGCOUNT=$(find "$LOGDIR" -maxdepth 1 -type f -name 'pc-remote-*.log' 2>/dev/null | wc -l)
 if [ "$LOGCOUNT" -gt 10 ]; then
-	OLDEST_LOGS=$(ls -t "$LOGDIR"/pc-remote-*.log | tail -n +"11")
-	for log in $OLDEST_LOGS; do
+	find "$LOGDIR" -maxdepth 1 -type f -name 'pc-remote-*.log' -printf "%T@ %p\n" | sort -n | head -n -10 | awk '{print $2}' | while read -r log; do
 		mv "$log" "$ARCHIVEDIR/"
 	done
 fi

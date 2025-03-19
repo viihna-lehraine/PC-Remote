@@ -4,7 +4,11 @@ import { EnvVars } from '../types/index.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { parseIntStrict, parseString } from '../utils/parse.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const envPath = path.resolve(__dirname, '../../config/.env');
 

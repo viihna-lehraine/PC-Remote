@@ -1,0 +1,1 @@
+{"version":3,"file":"errorClasses.js","sourceRoot":"","sources":["../../../src/core/errors/errorClasses.ts"],"names":[],"mappings":"AAAA,gDAAgD;AAEhD,MAAM,OAAO,QAAS,SAAQ,KAAK;IAC3B,UAAU,CAAS;IAE1B,YAAY,OAAe,EAAE,aAAqB,GAAG;QACpD,KAAK,CAAC,OAAO,CAAC,CAAC;QACf,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;QAE7B,KAAK,CAAC,iBAAiB,CAAC,IAAI,EAAE,IAAI,CAAC,WAAW,CAAC,CAAC;IACjD,CAAC;CACD"}

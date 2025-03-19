@@ -40,15 +40,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.register(fastifyStatic, {
-	root: join(__dirname, '../../frontend/dist'),
+	root: join(__dirname, '../../frontend/public'),
 	prefix: '/'
 });
 
 const start = async () => {
 	try {
-		await app.listen({ port: env.BACKEND_PORT, host: `${env.LISTEN_ADDR}` });
-
 		globalErrorHandler(app);
+
+		await app.listen({ port: env.BACKEND_PORT, host: `${env.LISTEN_ADDR}` });
 
 		console.log(`Server running at http://${env.LAN_IP_ADDR}:${env.BACKEND_PORT}`);
 	} catch (err) {

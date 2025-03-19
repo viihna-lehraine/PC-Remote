@@ -11,7 +11,7 @@
 		"dev": "concurrently -k -n frontend,backend -c \"cyan.bold,magenta.bold\" \"cd frontend && pnpm run dev\" \"cd backend && pnpm run dev\"",
 		"start": "pnpm --filter backend run start"
 	},
-	"packageManager": "pnpm@10.6.4",
+	"packageManager": "pnpm@10.6.5",
 	"dependencies": {
 		"concurrently": "^9.1.2"
 	},
