@@ -23,6 +23,9 @@ jobs:
                   node-version: 20
                   cache: 'pnpm'
 
+            - name: Install PNPM
+              run: npm install -g pnpm
+
             - name: Debug PNPM Installation
               run: |
                   echo "Checking Node.js version:"
