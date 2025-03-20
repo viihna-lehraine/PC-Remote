@@ -32,20 +32,23 @@ jobs:
                     echo "Checking PNPM version before install:"
                     pnpm --version || echo "PNPM not found in PATH"
 
-            - name: Install PNPM (Corepack or Manual)
+            - name: Install PNPM
               run: |
                      corepack enable
                      corepack prepare pnpm@latest --activate
-                     pnpm --version || npm install -g pnpm
+                     export PATH=$(dirname $(which node)):$PATH
+                     pnpm --version || (npm install -g pnpm && export PATH=$(npm root -g)/pnpm:$PATH)
 
             - name: Debug PNPM Installation
               run: |
-                  echo "Checking Node.js version:"
-                  node -v
-                  echo "Checking PNPM version:"
-                  pnpm --version
-                  echo "Listing project dependencies:"
-                  pnpm list
+                     echo "Checking Node.js version:"
+                     node -v
+                     echo "Checking Corepack version:"
+                     corepack --version || echo "Corepack not found"
+                     echo "Checking PNPM version after install:"
+                     pnpm --version || echo "PNPM still missing!"
+                     echo "Checking where PNPM is installed:"
+                     which pnpm || echo "PNPM not in PATH"
 
             - name: Install dependencies
               run: pnpm install -no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
