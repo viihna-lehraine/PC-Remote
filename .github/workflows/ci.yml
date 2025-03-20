@@ -36,7 +36,7 @@ jobs:
               run: pnpm --filter backend run build || (echo "Build failed ❌" && exit 1)
 
             - name: Notify Discord on success
-              if: success()
+              if: success() && env.DISCORD_WEBHOOK != ''
               run: |
                   curl -H "Content-Type: application/json" \
                        -X POST \
@@ -44,7 +44,7 @@ jobs:
                        ${{ secrets.DISCORD_WEBHOOK }}
 
             - name: Notify Discord on failure
-              if: failure()
+              if: failure() && env.DISCORD_WEBHOOK != ''
               run: |
                   curl -H "Content-Type: application/json" \
                        -X POST \
