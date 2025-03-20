@@ -6,13 +6,15 @@
 	"license": "GNU GPLv3",
 	"type": "module",
 	"scripts": {
-		"build": "pnpm --filter frontend run build && pnpm --filter backend run build",
+		"build:local": "pnpm --filter frontend run build && pnpm --filter backend run build",
+		"build": "turbo run build --concurrency=2",
 		"deploy": "pnpm run build && pnpm run start",
 		"dev": "concurrently -k -n frontend,backend -c \"cyan.bold,magenta.bold\" \"cd frontend && pnpm run dev\" \"cd backend && pnpm run dev\"",
 		"start": "pnpm --filter backend run start"
 	},
 	"packageManager": "pnpm@10.6.5",
 	"dependencies": {
+		"concurrency": "^0.1.4",
 		"concurrently": "^9.1.2"
 	},
 	"pnpm": {

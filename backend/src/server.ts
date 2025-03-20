@@ -9,11 +9,20 @@ import { join } from 'path';
 import path from 'path';
 import { env } from './core/index.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const httpsOptions = {
+	key: fs.readFileSync(path.join(__dirname, '../config/tls/server.key')),
+	cert: fs.readFileSync(path.join(__dirname, '../config/tls/server.crt'))
+};
+
 fs.mkdirSync(env.LOG_DIR, { recursive: true });
 
-const logFilePath = path.join(env.LOG_DIR, 'shoutshack.log');
+const logFilePath = path.join(env.LOG_DIR, 'pc-remote.log');
 
 const app = Fastify({
+	https: httpsOptions,
 	logger: {
 		level: env.LOG_LEVEL || 'info',
 		transport: {
@@ -36,9 +45,6 @@ console.warn = (...args) => app.log.warn(args.join(' '));
 console.error = (...args) => app.log.error(args.join(' '));
 console.debug = (...args) => app.log.debug(args.join(' '));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 app.register(fastifyStatic, {
 	root: join(__dirname, '../../frontend/public'),
 	prefix: '/'
@@ -50,7 +56,7 @@ const start = async () => {
 
 		await app.listen({ port: env.BACKEND_PORT, host: `${env.LISTEN_ADDR}` });
 
-		console.log(`Server running at http://${env.LAN_IP_ADDR}:${env.BACKEND_PORT}`);
+		console.log(`Server running at https://${env.LAN_IP_ADDR}:${env.BACKEND_PORT}`);
 	} catch (err) {
 		app.log.error(err);
 		process.exit(1);
@@ -58,4 +64,4 @@ const start = async () => {
 };
 start();
 
-await import('./websocket/ws.js');
+await import('./ws/index.js');

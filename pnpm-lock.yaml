@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      concurrency:
+        specifier: ^0.1.4
+        version: 0.1.4
       concurrently:
         specifier: ^9.1.2
         version: 9.1.2
@@ -70,6 +73,9 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.22.0
+      '@types/dom-speech-recognition':
+        specifier: ^0.0.4
+        version: 0.0.4
       '@types/react':
         specifier: ^19.0.10
         version: 19.0.11
@@ -550,6 +556,9 @@ packages:
   '@swc/types@0.1.19':
     resolution: {integrity: sha512-WkAZaAfj44kh/UFdAQcrMP1I0nwRqpt27u+08LMBYMqmQfwwMofYoMh/48NGkMMRfC4ynpfwRbJuu8ErfNloeA==}
 
+  '@types/dom-speech-recognition@0.0.4':
+    resolution: {integrity: sha512-zf2GwV/G6TdaLwpLDcGTIkHnXf8JEf/viMux+khqKQKDa8/8BAUtXXZS563GnvJ4Fg0PBLGAaFf2GekEVSZ6GQ==}
+
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
@@ -757,6 +766,9 @@ packages:
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
+
+  concurrency@0.1.4:
+    resolution: {integrity: sha512-uwS/Z8zsvOUnIfTiMM5kV5N5JnsrR1fpt5thlg723jELkoORXmFs+BJHOaCn9OTGpCVkfG3vqiLGBPHiBXxKaA==}
 
   concurrently@9.1.2:
     resolution: {integrity: sha512-H9MWcoPsYddwbOGM6difjVwVZHl63nwMEwDJG/L7VGtuaJhb12h2caPG2tVPWs7emuYix252iGfqOyrz1GczTQ==}
@@ -1961,6 +1973,8 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
+  '@types/dom-speech-recognition@0.0.4': {}
+
   '@types/estree@1.0.6': {}
 
   '@types/json-schema@7.0.15': {}
@@ -2201,6 +2215,8 @@ snapshots:
   colorette@2.0.20: {}
 
   concat-map@0.0.1: {}
+
+  concurrency@0.1.4: {}
 
   concurrently@9.1.2:
     dependencies:
