@@ -27,7 +27,7 @@ jobs:
               uses: pnpm/action-setup@v3
 
             - name: Install dependencies
-              run: pnpm install -no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
+              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
 
             - name: Build frontend
               run: pnpm --filter frontend run build || (echo "Build failed ❌" && exit 1)
