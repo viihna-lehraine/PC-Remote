@@ -23,8 +23,20 @@ jobs:
                   node-version: 20
                   cache: 'pnpm'
 
-            - name: Install PNPM
-              run: corepack enable && corepack prepare pnpm@latest --activate
+            - name: Debug Corepack & PNPM
+              run: |
+                    echo "Checking Node.js version:"
+                    node -v
+                    echo "Checking Corepack version:"
+                    corepack --version || echo "Corepack not found"
+                    echo "Checking PNPM version before install:"
+                    pnpm --version || echo "PNPM not found in PATH"
+
+            - name: Install PNPM (Corepack or Manual)
+              run: |
+                     corepack enable
+                     corepack prepare pnpm@latest --activate
+                     pnpm --version || npm install -g pnpm
 
             - name: Debug PNPM Installation
               run: |
