@@ -7,8 +7,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sslCert = fs.readFileSync(path.resolve(__dirname, '../backend/config/tls/server.crt'));
-const sslKey = fs.readFileSync(path.resolve(__dirname, '../backend/config/tls/server.key'));
+const isCI = process.env.CI === 'true';
+const certPath = path.resolve(__dirname, '../backend/config/tls/server.crt');
+const keyPath = path.resolve(__dirname, '../backend/config/tls/server.key');
+
+const sslCert = fs.existsSync(certPath) ? fs.readFileSync(certPath) : null;
+const sslKey = fs.existsSync(keyPath) ? fs.readFileSync(keyPath) : null;
 
 export default defineConfig({
 	root: 'src',
@@ -21,10 +25,7 @@ export default defineConfig({
 	server: {
 		cors: true,
 		host: '192.168.50.10',
-		https: {
-			key: sslKey,
-			cert: sslCert
-		},
+		https: isCI || !sslKey || !sslCert ? false : { key: sslKey, cert: sslCert },
 		open: true,
 		port: 3070,
 		proxy: {
