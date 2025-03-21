@@ -2,21 +2,10 @@ import { WebSocketServer } from 'ws';
 import { handleCommandSocket } from './commands.js';
 // import { handleGestureSocket } from './gestures.js';
 import { handleChatSocket, registerChatClient } from './chat.js';
-import { fileURLToPath } from 'url';
-import { createServer } from 'https';
-import path from 'path';
-import fs from 'fs';
+import { createServer } from 'http';
 import { env } from '../core/loadEnv.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const httpsOptions = {
-	key: fs.readFileSync(path.join(__dirname, '../../config/tls/server.key')),
-	cert: fs.readFileSync(path.join(__dirname, '../../config/tls/server.crt'))
-};
-
-const server = createServer(httpsOptions);
+const server = createServer();
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', ws => {
@@ -41,5 +30,5 @@ wss.on('connection', ws => {
 });
 
 server.listen(env.WS_PORT, env.LISTEN_ADDR, () => {
-	console.log(`WebSocket server running on wss://${env.LAN_IP_ADDR}:${env.WS_PORT}`);
+	console.log(`WebSocket server running on ws://${env.LAN_IP_ADDR}:${env.WS_PORT}`);
 });

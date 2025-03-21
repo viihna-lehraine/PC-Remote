@@ -1,0 +1,20 @@
+services:
+    nginx:
+        build: ./nginx
+        container_name: pc-remote-nginx
+        ports:
+            - '444:443'
+        networks:
+            - pc-remote-net
+        restart: unless-stopped
+        volumes:
+            - /etc/ssl/projects/pc-remote/services/nginx/:/etc/nginx/certs/:ro
+            - /etc/ssl/projects/pc-remote/ca/:/etc/nginx/ca/:ro
+            - type: bind
+              source: /etc/ssl/projects/pc-remote/dhparam.pem
+              target: /etc/dhparam.pem
+              read_only: true
+
+networks:
+    pc-remote-net:
+        external: true

@@ -30,11 +30,13 @@ const loadEnv = (filePath = envPath) => {
             return parser(value);
         };
         return {
+            NODE_ENV: getEnvVar('NODE_ENV', parseString),
             LAN_IP_ADDR: getEnvVar('LAN_IP_ADDR', parseString),
             LISTEN_ADDR: getEnvVar('LISTEN_ADDR', parseString),
             LOG_DIR: getEnvVar('LOG_DIR', parseString),
             LOG_LEVEL: getEnvVar('LOG_LEVEL', parseString),
             BACKEND_PORT: getEnvVar('BACKEND_PORT', parseIntStrict),
+            DEV_PORT: getEnvVar('DEV_PORT', parseIntStrict),
             WS_PORT: getEnvVar('WS_PORT', parseIntStrict)
         };
     }

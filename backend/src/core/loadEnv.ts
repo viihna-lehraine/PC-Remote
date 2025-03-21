@@ -1,6 +1,6 @@
 // File: backend/src/core/loadEnv.ts
 
-import { EnvVars } from '../types/index.js';
+import { EnvVars, NodeEnv } from '../types/index.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -39,11 +39,13 @@ const loadEnv = (filePath = envPath): EnvVars => {
 		};
 
 		return {
+			NODE_ENV: getEnvVar('NODE_ENV', parseString) as NodeEnv,
 			LAN_IP_ADDR: getEnvVar('LAN_IP_ADDR', parseString),
 			LISTEN_ADDR: getEnvVar('LISTEN_ADDR', parseString),
 			LOG_DIR: getEnvVar('LOG_DIR', parseString),
 			LOG_LEVEL: getEnvVar('LOG_LEVEL', parseString),
 			BACKEND_PORT: getEnvVar('BACKEND_PORT', parseIntStrict),
+			DEV_PORT: getEnvVar('DEV_PORT', parseIntStrict),
 			WS_PORT: getEnvVar('WS_PORT', parseIntStrict)
 		};
 	} catch (error) {

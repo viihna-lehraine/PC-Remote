@@ -1,0 +1,8 @@
+# Control
+systemctl --user daemon-reexec
+systemctl --user daemon-reload
+systemctl --user enable pc-remote
+systemctl --user start pc-remote
+
+# Check Logs
+journalctl --user -u pc-remote -f

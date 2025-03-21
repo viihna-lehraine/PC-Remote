@@ -4,8 +4,10 @@ import React, { useEffect, useRef } from 'react';
 import { WebSocketContext } from '../context/WebSocketContext.js';
 
 const WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${
-	window.location.hostname
-}:3060`;
+	window.location.host
+}/ws/`;
+
+console.log(`[Websocket] Connecting to: ${WS_URL}`);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const ws = useRef<WebSocket | null>(null);
@@ -13,7 +15,9 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 	useEffect(() => {
 		ws.current = new WebSocket(WS_URL);
 
-		ws.current.onopen = () => console.log('Connected to PC WebSocket');
+		ws.current.onopen = () => console.log('[WebSocket] Connected');
+		ws.current.onclose = () => console.log('[WebSocket] Disconnected');
+		ws.current.onerror = () => console.error('[WebSocket] Error', Error);
 		ws.current.onmessage = event => {
 			const message = event.data;
 			console.log('Received:', message);

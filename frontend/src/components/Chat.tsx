@@ -13,8 +13,8 @@ const Chat = () => {
 
 	useEffect(() => {
 		const WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${
-			window.location.hostname
-		}:3060`;
+			window.location.host
+		}/ws/`;
 		ws.current = new WebSocket(WS_URL);
 		ws.current.onmessage = event => {
 			const data = event.data.toString();
