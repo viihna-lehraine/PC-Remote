@@ -17,23 +17,17 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - name: Set up PNPM
+              uses: pnpm/action-setup@v3
+
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 20
                   cache: 'pnpm'
 
-            - name: Debug PNPM Installation
-              run: |
-                  echo "Checking Node.js version:"
-                  node -v
-                  echo "Checking PNPM version:"
-                  pnpm --version
-                  echo "Listing project dependencies:"
-                  pnpm list
-
             - name: Install dependencies
-              run: pnpm install -no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
+              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
 
             - name: Build frontend
               run: pnpm --filter frontend run build || (echo "Build failed ❌" && exit 1)
@@ -42,7 +36,7 @@ jobs:
               run: pnpm --filter backend run build || (echo "Build failed ❌" && exit 1)
 
             - name: Notify Discord on success
-              if: success()
+              if: success() && env.DISCORD_WEBHOOK != ''
               run: |
                   curl -H "Content-Type: application/json" \
                        -X POST \
@@ -50,7 +44,7 @@ jobs:
                        ${{ secrets.DISCORD_WEBHOOK }}
 
             - name: Notify Discord on failure
-              if: failure()
+              if: failure() && env.DISCORD_WEBHOOK != ''
               run: |
                   curl -H "Content-Type: application/json" \
                        -X POST \
