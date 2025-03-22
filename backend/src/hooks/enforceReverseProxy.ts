@@ -2,16 +2,22 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getViteStatus } from '../plugins/vitePing.js';
+import { isFromTrustedProxy } from '../utils/index.js';
 
 export const enforceReverseProxy = (app: FastifyInstance) => {
 	app.addHook('onRequest', async (req: FastifyRequest, reply: FastifyReply) => {
 		const xfwd = req.headers['x-forwarded-for'];
+		const sourceIP = req.ip;
 
-		if (!getViteStatus() && !xfwd) {
-			req.log.warn(
-				'[Security] Blocked direct request without reverse proxy and dev mode disengaged.'
-			);
-			return reply.code(403).send({ error: 'Access denied' });
+		const realClientIP = Array.isArray(xfwd) ? xfwd[0] : (xfwd ?? '').split(',')[0].trim();
+
+		req.log.info(`[Proxy Trust] Client IP: ${realClientIP || 'N/A'}, Source IP: ${sourceIP}`);
+
+		if (!getViteStatus()) {
+			if (!xfwd || !isFromTrustedProxy(sourceIP)) {
+				req.log.warn(`[Security] Rejected request from untrusted source IP: ${sourceIP}`);
+				return reply.code(403).send({ error: 'Access denied' });
+			}
 		}
 	});
 };

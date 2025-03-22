@@ -39,7 +39,11 @@ export const useVoiceCommands = () => {
 				return;
 			}
 
-			ws.send(wsCommand);
+			if (ws.socket?.readyState === WebSocket.OPEN) {
+				ws.socket.send(wsCommand);
+			} else {
+				console.error('WebSocket is not open');
+			}
 		};
 
 		recognition.onerror = event => console.error('Speech recognition error:', event.error);

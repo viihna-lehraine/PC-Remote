@@ -31,6 +31,7 @@ const loadEnv = (filePath = envPath) => {
         };
         return {
             NODE_ENV: getEnvVar('NODE_ENV', parseString),
+            DOCKER_SUBNET: getEnvVar('DOCKER_SUBNET', parseString),
             LAN_IP_ADDR: getEnvVar('LAN_IP_ADDR', parseString),
             LISTEN_ADDR: getEnvVar('LISTEN_ADDR', parseString),
             LOG_DIR: getEnvVar('LOG_DIR', parseString),

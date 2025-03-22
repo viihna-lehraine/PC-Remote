@@ -6,9 +6,17 @@ let viteIsRunning = false;
 let lastStatus: boolean | null = null;
 let viteReadyResolve: (() => void) | null = null;
 
-export const viteReady = new Promise<void>(resolve => {
-	viteReadyResolve = resolve;
-});
+export const viteReady = Promise.race([
+	new Promise<void>(resolve => {
+		viteReadyResolve = resolve;
+	}),
+	new Promise<void>(resolve => {
+		setTimeout(() => {
+			console.log('[VITE CHECK] Timeout reached. Proceeding without dev server.');
+			resolve();
+		}, 2500);
+	})
+]);
 
 export const getViteStatus = () => viteIsRunning;
 

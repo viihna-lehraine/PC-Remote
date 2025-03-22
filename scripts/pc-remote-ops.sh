@@ -4,6 +4,7 @@
 DIR_NAME='/home/viihna/Projects/pc-remote'
 DOCKER_COMPOSE_FILE="$DIR_NAME/docker-compose.yml"
 SERVICES="nginx"
+VERSION="1.0.0"
 
 ### === FLAGS === ###
 BUILD=false
@@ -17,6 +18,13 @@ SERVICE_REBUILD=""
 SHOW_LOGS=""
 TAG_IMAGE=false
 SERVICE_TO_TAG=""
+
+### === COLORS === ###
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
 set -e
 
@@ -78,25 +86,30 @@ print_ascii_art() {
 }
 
 print_help() {
-	echo "📖 **PC Remote - DevOps Control Script**"
-	echo "Usage: **pc-remote.sh** [options] OR just run **pc-remote.sh** for interactive mode."
+	echo "${CYAN}**PC Remote - DevOps Control Script**${NC}"
+	echo "${YELLOW}Usage:${NC} ./pc-remote.sh [flags] — or launch with no flags to enter interactive mode"
 	echo ""
-	echo "🔹 **General Options**"
-	echo "  -h           Show this help menu"
+	echo "General Options (CLI or Interactive)"
+	echo "  -h, help             Show this help menu"
+	echo "  version              Show current script version"
 	echo ""
-	echo "🔹 **Service Management**"
-	echo "  -d           Destroy all containers"
-	echo "  -u           Start all services in foreground"
-	echo "  -U           Start all services in detached mode"
-	echo "  -r <name>    Restart a specific service"
-	echo "  -R <name>    Rebuild a specific service"
-	echo "  -l <name>    Show logs for a specific service"
+	echo "Service Management"
+	echo "  -d, down             Destroy all containers"
+	echo "  -u, up               Start all services in foreground"
+	echo "  -U, up-detached      Start all services in detached mode"
+	echo "  -r, restart <name>   Restart a specific service"
+	echo "  -R, rebuild <name>   Rebuild a specific service"
+	echo "  -l, logs <name>      Show logs for a specific service"
 	echo ""
-	echo "🔹 **Build & Deployment**"
-	echo "  -b           Build all services"
-	echo "  -B           Full rebuild (stops, rebuilds, and restarts everything fresh)"
-	echo "  -p           Push all images to Docker Hub"
-	echo "  -t <name>    Tag a specific service before pushing"
+	echo "Build & Deployment"
+	echo "  -b, build            Build all services"
+	echo "  -B, full-rebuild     Stop, rebuild, and restart everything"
+	echo "  -p, push             Push Docker images to Docker Hub"
+	echo "  -t, tag <name>       Tag a specific service for pushing"
+	echo ""
+	echo "Extra"
+	echo "  status               Show running container status"
+	echo "  exit                 Leave interactive mode"
 	echo ""
 }
 
@@ -104,15 +117,15 @@ print_help() {
 destroy_services() {
 	echo "Destroying all containers..."
 	docker compose -f "$DOCKER_COMPOSE_FILE" down -v
-	echo "All containers removed."
+	echo "${GREEN}All containers removed.${NC}"
 }
 
 start_services() {
 	if [ "$DOCKER_UP_DETACHED" = true ]; then
-		echo "Starting services in detached mode..."
+		echo "${CYAN}Starting services in detached mode...${NC}"
 		docker compose -f "$DOCKER_COMPOSE_FILE" up -d
 	else
-		echo "Starting services in foreground..."
+		echo "${CYAN}Starting services in foreground...${NC}"
 		docker compose -f "$DOCKER_COMPOSE_FILE" up
 	fi
 }
@@ -120,9 +133,9 @@ start_services() {
 restart_service() {
 	SERVICE=$1
 	if [ -z "$SERVICE" ]; then
-		echo "Please specify a service to restart."
+		echo "${YELLOW}Please specify a service to restart.${NC}"
 	else
-		echo "Restarting service: $SERVICE"
+		echo "${CYAN}Restarting service: $SERVICE${NC}"
 		docker restart "$SERVICE"
 	fi
 }
@@ -130,9 +143,9 @@ restart_service() {
 rebuild_service() {
 	SERVICE=$1
 	if [ -z "$SERVICE" ]; then
-		echo "Please specify a service to rebuild."
+		echo "${YELLOW}Please specify a service to rebuild.${NC}"
 	else
-		echo "Rebuilding service: $SERVICE"
+		echo "${CYAN}Rebuilding service: $SERVICE${NC}"
 		docker compose -f "$DOCKER_COMPOSE_FILE" up --force-recreate --build -d "$SERVICE"
 	fi
 }
@@ -140,9 +153,9 @@ rebuild_service() {
 show_logs() {
 	SERVICE=$1
 	if [ -z "$SERVICE" ]; then
-		echo "Please specify a service to show logs."
+		echo "${YELLOW}Please specify a service to show logs.${NC}"
 	else
-		echo "Showing logs for: $SERVICE"
+		echo "${CYAN}Showing logs for: $SERVICE${NC}"
 		docker logs -f "$SERVICE"
 	fi
 }
@@ -150,7 +163,7 @@ show_logs() {
 build_services() {
 	echo "Building all services..."
 	docker compose -f "$DOCKER_COMPOSE_FILE" build
-	echo "Build complete."
+	echo "${GREEN}Build complete.${NC}"
 }
 
 full_rebuild() {
@@ -158,7 +171,7 @@ full_rebuild() {
 	docker compose -f "$DOCKER_COMPOSE_FILE" down
 	build_services
 	start_services
-	echo "Full rebuild complete."
+	echo "${GREEN}Full rebuild complete.${NC}"
 }
 
 push_images() {
@@ -167,17 +180,17 @@ push_images() {
 		echo "Pushing image for: $SERVICE"
 		docker push "viihnatech/pc-remote-$SERVICE:latest"
 	done
-	echo "Image push complete."
+	echo "${GREEN}Image push complete.${NC}"
 }
 
 tag_image() {
 	SERVICE=$1
 	if [ -z "$SERVICE" ]; then
-		echo "Please specify a service to tag."
+		echo "${YELLOW}Please specify a service to tag.${NC}"
 	else
 		echo "Tagging image for: $SERVICE"
 		docker tag "viihnatech/pc-remote-$SERVICE:latest" "viihnatech/pc-remote-$SERVICE:$(date +%Y%m%d%H%M)"
-		echo "Image tagged."
+		echo "${GREEN}Image tagged.${NC}"
 	fi
 }
 
@@ -202,7 +215,7 @@ while getopts ":bBdUur:R:l:pt:h" opt; do
 		exit 0
 		;;
 	*)
-		echo "❌ Invalid option: -$OPTARG"
+		echo "${RED}Invalid option: -$OPTARG${NC}"
 		exit 1
 		;;
 	esac
@@ -221,6 +234,7 @@ if [ "$TAG_IMAGE" = true ]; then tag_image "$SERVICE_TO_TAG"; fi
 
 ### === INTERACTIVE MODE === ###
 if [ -z "$STARTED" ]; then
+	clear
 	print_ascii_art
 	STARTED=true
 fi
@@ -231,11 +245,22 @@ echo "Enter a command, or type **help** for a list of commands."
 while true; do
 	printf "\n🔹 PC Remote > "
 	read -r CMD ARGS
+	CMD=$(echo "$CMD" | tr '[:upper:]' '[:lower:]')
 	case "$CMD" in
+	version)
+		echo "${GREEN}PC Remote DevOps Script v$VERSION${NC}"
+		echo "Author: Viihna Lehraine — $(date +%Y)"
+		;;
 	help)
 		print_help
 		;;
+	-h)
+		print_help
+		;;
 	down)
+		destroy_services
+		;;
+	-d)
 		destroy_services
 		;;
 	restart)
@@ -250,25 +275,53 @@ while true; do
 	build)
 		build_services
 		;;
+	-b)
+		build_services
+		;;
 	full-rebuild)
+		full_rebuild
+		;;
+	-B)
 		full_rebuild
 		;;
 	push)
 		push_images
 		;;
+	-p)
+		push_images
+		;;
 	tag)
 		tag_image "$ARGS"
 		;;
+	up)
+		DOCKER_UP=true
+		start_services
+		;;
+	-u)
+		DOCKER_UP=true
+		start_services
+		;;
+	up-detached)
+		DOCKER_UP=true
+		DOCKER_UP_DETACHED=true
+		start_services
+		;;
+	-U)
+		DOCKER_UP=true
+		DOCKER_UP_DETACHED=true
+		start_services
+		;;
+
 	status)
-		echo "🌐 Docker container status:"
+		echo "${CYAN}Docker container status:${NC}"
 		docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
 		;;
 	exit)
-		echo "👋 Exiting interactive mode."
+		echo "Exiting interactive mode."
 		exit 0
 		;;
 	*)
-		echo "❌ Unknown command: '$CMD'. Type 'help' for available commands."
+		echo "${RED}Unknown command: '$CMD'. Type 'help' for available commands.${NC}"
 		;;
 	esac
 done

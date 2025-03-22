@@ -10,10 +10,13 @@ services:
         volumes:
             - /etc/ssl/projects/pc-remote/services/nginx/:/etc/nginx/certs/:ro
             - /etc/ssl/projects/pc-remote/ca/:/etc/nginx/ca/:ro
+            - /home/viihna/Projects/pc-remote/logs/nginx:/var/log/nginx
             - type: bind
               source: /etc/ssl/projects/pc-remote/dhparam.pem
               target: /etc/dhparam.pem
               read_only: true
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
 
 networks:
     pc-remote-net:

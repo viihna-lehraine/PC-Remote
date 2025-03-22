@@ -27,7 +27,7 @@ jobs:
                   cache: 'pnpm'
 
             - name: Install dependencies
-              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies ❌" && exit 1)
+              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies" && exit 1)
 
             - name: Build frontend
               run: pnpm --filter frontend run build || (echo "Build failed ❌" && exit 1)
@@ -35,18 +35,47 @@ jobs:
             - name: Build backend
               run: pnpm --filter backend run build || (echo "Build failed ❌" && exit 1)
 
+            - name: Upload build logs
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build-logs
+                  path: build.log
+
             - name: Notify Discord on success
-              if: success() && env.DISCORD_WEBHOOK != ''
+              if: success()
               run: |
-                  curl -H "Content-Type: application/json" \
-                       -X POST \
-                       -d '{"content": "**PC Remote Build & Test Passed!**"}' \
-                       ${{ secrets.DISCORD_WEBHOOK }}
+                  BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                  curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg time "$BUILD_TIME" --arg sha "${{ github.sha }}" --arg actor "${{ github.actor }}" --arg branch "${{ github.ref_name }}" --arg msg "${{ github.event.head_commit.message || 'No commit message' }}" --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" '{
+                    embeds: [{
+                  title: "✅ PC Remote Build Succeeded",
+                  color: 65280,
+                  fields: [
+                    { name: "Commit", value: "[`\($sha)`](https://github.com/${{ github.repository }}/commit/\($sha))", inline: false },
+                    { name: "Message", value: "\($msg)", inline: false },
+                    { name: "By", value: "\($actor)", inline: true },
+                    { name: "Branch", value: "\($branch)", inline: true },
+                    { name: "Started At", value: "\($time)", inline: false },
+                    { name: "Logs", value: "[🔍 View Logs](\($url))", inline: false }
+                  ]
+                    }]
+                      }')" ${{ secrets.DISCORD_WEBHOOK }}
 
             - name: Notify Discord on failure
-              if: failure() && env.DISCORD_WEBHOOK != ''
+              if: failure()
               run: |
-                  curl -H "Content-Type: application/json" \
-                       -X POST \
-                       -d '{"content": "**PC Remote Build & Test Failed!** ❌"}' \
-                       ${{ secrets.DISCORD_WEBHOOK }}
+                  BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                  curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg time "$BUILD_TIME" --arg sha "${{ github.sha }}" --arg actor "${{ github.actor }}" --arg branch "${{ github.ref_name }}" --arg msg "${{ github.event.head_commit.message || 'No commit message' }}" --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" '{
+                    embeds: [{
+                      title: "❌ PC Remote Build Failed",
+                  color: 16711680,
+                  fields: [
+                    { name: "Commit", value: "[`\($sha)`](https://github.com/${{ github.repository }}/commit/\($sha))", inline: false },
+                    { name: "Message", value: "\($msg)", inline: false },
+                    { name: "By", value: "\($actor)", inline: true },
+                    { name: "Branch", value: "\($branch)", inline: true },
+                    { name: "Started At", value: "\($time)", inline: false },
+                    { name: "Logs", value: "[🔍 View Logs](\($url))", inline: false }
+                  ]
+                    }]
+                       }')" ${{ secrets.DISCORD_WEBHOOK }}

@@ -2,21 +2,20 @@
 
 import { useEffect, useState, useRef } from 'react';
 import '../styles/components/Chat.css';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 const Chat = () => {
 	const [messages, setMessages] = useState<string[]>([]);
 	const [input, setInput] = useState('');
 	const [isOpen, setIsOpen] = useState(false); // chat visibility toggle
-	const ws = useRef<WebSocket | null>(null);
+	const { socket } = useWebSocket();
 	const username = 'Viihna'; // change per user
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
-		const WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${
-			window.location.host
-		}/ws/`;
-		ws.current = new WebSocket(WS_URL);
-		ws.current.onmessage = event => {
+		if (!socket) return;
+
+		const handleMessage = (event: MessageEvent) => {
 			const data = event.data.toString();
 
 			if (data.startsWith('chat:')) {
@@ -24,10 +23,12 @@ const Chat = () => {
 			}
 		};
 
+		socket.addEventListener('message', handleMessage);
+
 		return () => {
-			ws.current?.close();
+			socket.removeEventListener('message', handleMessage);
 		};
-	}, []);
+	}, [socket]);
 
 	useEffect(() => {
 		if (isOpen && inputRef.current) {
@@ -37,12 +38,20 @@ const Chat = () => {
 	}, [isOpen]);
 
 	const sendMessage = () => {
-		console.log('sendMessage() TRIGGERED');
-
-		if (ws.current && input.trim()) {
-			ws.current.send(`chat:${username}:${input}`);
-			setInput('');
+		if (!socket) {
+			console.error('Cannot send message: WebSocket is not available');
+			return;
 		}
+
+		if (socket.readyState !== WebSocket.OPEN) {
+			console.error('Cannot send message: WebSocket not open');
+			return;
+		}
+
+		if (!input.trim()) return;
+
+		socket.send(`chat:${username}:${input}`);
+		setInput('');
 	};
 
 	return (

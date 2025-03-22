@@ -9,6 +9,7 @@ export interface Denylist {
 export interface EnvVars {
 	NODE_ENV: NodeEnv;
 
+	DOCKER_SUBNET: string;
 	LAN_IP_ADDR: string;
 	LISTEN_ADDR: string;
 

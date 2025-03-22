@@ -9,7 +9,9 @@ const app = createApp();
 patchConsole(app.log);
 initializePlugins(env, app);
 initializeHooks(app);
+console.log('Waiting for viteReady');
 await viteReady;
+console.log('viteReady resolved');
 if (!getViteStatus()) {
     registerStaticFiles(app);
 }

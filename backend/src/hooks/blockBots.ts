@@ -11,10 +11,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const denyListPath = path.resolve(__dirname, '../../config/data/denylist.json');
-
 const denylist: Denylist = JSON.parse(fs.readFileSync(denyListPath, 'utf-8'));
-
-const matcher = new CIDRMatcher(denylist.ips);
+const normalizedIPs = denylist.ips.map(ip => (ip.includes('/') ? ip : `${ip}/32`));
+const matcher = new CIDRMatcher(normalizedIPs);
 
 export const blockKnownBots = (app: FastifyInstance) => {
 	app.addHook('onRequest', async (req: FastifyRequest, reply: FastifyReply) => {
