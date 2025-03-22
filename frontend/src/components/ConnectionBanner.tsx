@@ -1,15 +1,20 @@
 // File: frontend/src/components/ConnectionBanner.tsx
 
-import '../styles/components/ConnectionBanner.css';
 import { useWebSocket } from '../hooks/useWebSocket.js';
+import '../styles/index.css';
 
 const ConnectionBanner = () => {
 	const { status } = useWebSocket();
 
 	if (status === 'connected') return null;
 
+	const bgColor = status === 'connecting' ? 'bg-[#ffae42]' : 'bg-[#e53935]';
+
 	return (
-		<div className="banner">
+		<div
+			id="connection-banner"
+			className={`fixed top-0 left-0 right-0 text-white text-center py-2 font-bold z-[9999] ${bgColor}`}
+		>
 			🔌{' '}
 			{status === 'connecting'
 				? 'Connecting to server...'

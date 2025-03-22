@@ -1,11 +1,32 @@
 services:
+    db:
+        build: ./db
+        restart: on-failure
+        env_file:
+            - .env
+        user: '999:999'
+        volumes:
+            - /etc/ssl/projects/pc-remote/services/db:/var/lib/postgresql/certs:ro
+            - /etc/ssl/projects/pc-remote/ca/:/var/lib/postgresql/ca:ro
+            - /etc/ssl/projects/pc-remote/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
+            - /home/viihna/Projects/pc-remote/db/data/:/var/lib/postgresql/data
+            - /home/viihna/Projects/pc-remote/db/init:/docker-entrypoint.initdb.d
+            - /home/viihna/Projects/pc-remote/db/postgresql.conf:/etc/postgresql/postgresql.conf
+            - /home/viihna/Projects/pc-remote/db/pg_hba.conf:/etc/postgresql/pg_hba.conf
+            - /home/viihna/Projects/pc-remote/db/backups:/var/lib/postgresql/backups
+            - type: bind
+              source: /etc/ssl/projects/pc-remote/dhparam.pem
+              target: /var/lib/postgresql/dhparam.pem
+              read_only: true
+        ports:
+            - '4590:4590'
+        command: ['postgres', '-c', 'config_file=/etc/postgresql/postgresql.conf']
+
     nginx:
         build: ./nginx
         container_name: pc-remote-nginx
         ports:
-            - '444:443'
-        networks:
-            - pc-remote-net
+            - '192.168.50.10:444:443'
         restart: unless-stopped
         volumes:
             - /etc/ssl/projects/pc-remote/services/nginx/:/etc/nginx/certs/:ro
@@ -18,6 +39,32 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
 
-networks:
-    pc-remote-net:
-        external: true
+    vault:
+        build: ./vault
+        user: '0:0'
+        restart: on-failure
+        cap_add:
+            - IPC_LOCK
+        environment:
+            - VAULT_ADDR=https://127.0.0.1:4425
+            - VAULT_API_ADDR=https://127.0.0.1:4425
+        ports:
+            - '192.168.50.10:4425:4425'
+            - '192.168.50.10:4426:4426'
+        volumes:
+            - /etc/ssl/projects/pc-remote/services/vault:/vault/certs:rw
+            - /etc/ssl/projects/pc-remote/ca:/vault/ca:ro
+            - /etc/ssl/projects/pc-remote/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
+            - /home/viihna/Projects/pc-remote/vault/data:/vault/data
+            - /home/viihna/Projects/vault/config/config.hcl:/vault/config/config.hcl:ro
+            - /home/viihna/Projects/pc-remote/vault/init/entrypoint.sh:/vault/entrypoint.sh:ro
+            - type: bind
+              source: /etc/ssl/projects/pc-remote/dhparam.pem
+              target: /vault/dhparam.pem
+              read_only: true
+        command:
+            [
+                '/bin/sh',
+                '-c',
+                '/vault/entrypoint.sh && vault server -config=/vault/config/config.hcl'
+            ]

@@ -1,214 +1,43 @@
 /* File: frontend/src/styles/index.css */
 
-:root {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100vh;
-	width: 100vw;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
-	box-sizing: border-box;
+@import './globals.css';
 
-	color-scheme: light dark;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #141414;
-
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: inherit;
-}
-a:hover {
-	color: #535bf2;
-}
-
-h1 {
-	font-size: 2.5rem;
-	margin-bottom: 1rem;
-	text-align: center;
-	width: 100%;
-	text-shadow: 0px 0px 8px rgba(161, 234, 251, 0.7);
-}
-html,
-body,
-root {
-	height: 100vh;
-	width: 100vw;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	overflow: hidden;
-}
-
-body {
-	margin: 0;
-	padding: 0;
-	background: radial-gradient(circle at center, #181818, #0f0f0f);
-	color: #c3f4f5;
-	font-family: 'Arial', sans-serif;
-	overflow: hidden;
-}
-
-.app {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	margin: auto;
-}
-
-.message-buttons-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.5rem;
-	width: 100%;
-	max-width: 100%;
-}
-
-.message {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0.75rem 1.5rem;
-	flex-grow: 1;
-	margin: 0;
-	width: 100%;
-	max-width: 100%;
-	min-height: 1rem;
-	padding: 0.75rem 1rem;
-	text-align: center;
-	background: #292929;
-	border-radius: 8px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.marquee {
-	display: flex;
-	white-space: nowrap;
-	animation: scrollText 12s linear infinite;
-}
-
-.marquee span {
-	margin-right: 2rem; /* Adjust gap between repetitions */
-}
-
-.message-wrapper {
-	display: flex;
-	width: 100%;
-	justify-content: center;
-	margin-bottom: 0.5rem;
-	max-width: 400px;
-	min-width: 250px;
-}
-
-.button-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	min-width: 250px;
-	max-width: 400px;
-	gap: 1rem;
-}
-
-.button-container button {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	padding: 0.75rem 1.5rem;
-	border: none;
-	border-radius: 8px;
-	background: linear-gradient(135deg, #b02bb5d2, #d45bb5d2);
-	color: #c3f4f5;
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s ease-in-out;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-	overflow: hidden;
-	min-height: 2rem;
-}
-
-button:active {
-	transform: scale(0.96);
-	box-shadow: none;
-}
-button::before {
-	content: '';
-	position: absolute;
-	inset: -2px;
-	border-radius: 10px;
-	background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
-	opacity: 0;
-	transition: opacity 0.3s ease-in-out;
-}
-button:hover {
-	background: linear-gradient(135deg, #404040, #282828);
-	box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
-}
-button:hover::before {
-	opacity: 1;
-}
-button:focus,
-button:focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
-}
-button svg {
-	width: 20px;
-	height: 20px;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
 	:root {
-		color: #213547;
-		background-color: #c3f4f5;
+		color-scheme: light dark;
+		color: rgba(255, 255, 255, 0.87);
+		background-color: #141414;
+		font-synthesis: none;
+		text-rendering: optimizeLegibility;
+		-moz-osx-font-smoothing: grayscale;
 	}
+
+	body {
+		@apply m-0 p-0 text-[#c3f4f5] overflow-hidden;
+		background: radial-gradient(circle at center, #181818, #0f0f0f);
+		font-family: 'Arial', sans-serif;
+	}
+
+	html,
+	body,
+	#root {
+		@apply h-screen w-screen m-0 p-0 flex items-center justify-center overflow-hidden;
+	}
+
+	a {
+		@apply font-medium text-[#646cff] no-underline;
+	}
+
 	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #c3f4f5;
-	}
-}
-
-@media (max-width: 600px) {
-	.container {
-		width: 90vw;
-		padding: 1.5rem;
+		@apply text-[#535bf2];
 	}
 
-	.button-container {
-		gap: 0.75rem;
-	}
-
-	button {
-		width: 100%;
-		justify-content: center;
-	}
-}
-
-@keyframes scrollText {
-	from {
-		transform: translateX(100%);
-	}
-	to {
-		transform: translateX(-100%);
+	h1 {
+		@apply text-[2.5rem] mb-4 text-center w-full;
+		text-shadow: 0 0 8px rgba(161, 234, 251, 0.7);
 	}
 }

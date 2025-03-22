@@ -1,8 +1,8 @@
 // File: frontend/src/components/Chat.tsx
 
 import { useEffect, useState, useRef } from 'react';
-import '../styles/components/Chat.css';
-import { useWebSocket } from '../hooks/useWebSocket';
+import { useWebSocket } from '../hooks/useWebSocket.js';
+import '../styles/index.css';
 
 const Chat = () => {
 	const [messages, setMessages] = useState<string[]>([]);
@@ -57,30 +57,57 @@ const Chat = () => {
 	return (
 		<div>
 			{/* floating chat toggle button */}
-			<button className="chat-toggle" onClick={() => setIsOpen(!isOpen)}>
+			<button
+				id="chat-toggle"
+				className="custom-button fixed bottom-4 right-4 text-white rounded-full w-[45px] h-[45px] text-[22px] flex items-center justify-center active:transform-none active:shadow-none"
+				onClick={() => setIsOpen(!isOpen)}
+			>
 				💬
 			</button>
 
 			{/* chat UI */}
 			{isOpen && (
-				<div className="chat-container" onClick={e => e.stopPropagation()}>
-					<div className="chat-header">
+				<div
+					id="chat-container"
+					className="fixed bottom-[70px] right-4 w-[280px] h-[300px] bg-[#222] text-white rounded-lg overflow-hidden flex flex-col pointer-events-auto"
+					onClick={e => e.stopPropagation()}
+				>
+					<div
+						id="chat-header"
+						className="flex items-center justify-between bg-[#444] px-3 py-2 font-bold border-b border-[#222]"
+					>
 						<span>Chat</span>
-						<button className="chat-close" onClick={() => setIsOpen(false)}>
+						<button
+							id="chat-close"
+							className="bg-none border-none text-white text-[16px] cursor-pointer p-[2px] w-[24px] h-[24px] flex items-center justify-center hover:text-red-400 active:transform-none active:shadow-none"
+							onClick={() => setIsOpen(false)}
+						>
 							❌
 						</button>
 					</div>
 
-					<div className="chat-messages">
+					<div
+						id="chat-messages"
+						className="h-[200px] overflow-y-auto p-2 bg-[#222] flex flex-col gap-[6px] text-sm"
+					>
 						{messages.map((msg, index) => (
-							<div key={index} className="chat-message">
+							<div
+								key={index}
+								className="chat-message bg-[#444] px-3 py-1.5 rounded-md max-w-[80%] break-words"
+							>
 								{msg}
 							</div>
 						))}
 					</div>
 
-					<div className="chat-input-container" onClick={e => e.stopPropagation()}>
+					<div
+						id="chat-input-container"
+						className="flex gap-1 p-2 bg-[#222] border-t border-[#444]"
+						onClick={e => e.stopPropagation()}
+					>
 						<input
+							id="chat-container-input"
+							className="flex-grow p-2 bg-[#333] text-white rounded-md border-none"
 							ref={inputRef}
 							type="text"
 							value={input}
@@ -93,6 +120,7 @@ const Chat = () => {
 							}}
 						/>
 						<button
+							className="custom-button active:transform-none active:shadow-none"
 							id="send-btn"
 							onMouseDown={e => e.preventDefault()}
 							onClick={e => {

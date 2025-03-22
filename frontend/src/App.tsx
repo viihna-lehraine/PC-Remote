@@ -1,8 +1,8 @@
 // File: frontend/src/App.tsx
 
 import { useState, useEffect } from 'react';
-import { useWebSocket } from './hooks/useWebSocket.js';
 import Chat from './components/Chat.js';
+import { useWebSocket } from './hooks/useWebSocket.js';
 import VoiceCommandButton from './components/VoiceCommandButton.js';
 import ConnectionBanner from './components/ConnectionBanner.js';
 import { WebSocketProvider } from './components/WebSocketProvider.js';
@@ -35,24 +35,43 @@ const App = () => {
 	};
 
 	return (
-		<div className="app">
-			<ConnectionBanner /> {/* Optional but recommended */}
+		<div id="app" className="flex flex-col items-center w-full m-auto">
+			<ConnectionBanner />
 			<h1>PC Remote</h1>
-			<div className="message-buttons-wrapper">
-				<div className="message-wrapper">
-					<div className="message">
-						<div className="marquee">
-							{/* duplicate for smooth looping */}
-							<span>Last message: {message}</span>
-							<span>Last message: {message}</span>{' '}
+			<div
+				id="message-buttons-wrapper"
+				className="flex flex-col items-center w-full gap-2 max-w-full"
+			>
+				<div
+					id="message-wrapper"
+					className="flex w-full justify-center mb-2 max-w-[400px] min-w-[250px]"
+				>
+					<div
+						id="message"
+						className="flex items-center justify-center px-4 py-3 flex-grow w-full max-w-full min-h-4 text-center bg-[#292929] rounded-lg whitespace-nowrap overflow-hidden text-ellipsis"
+					>
+						<div id="marquee" className="flex whitespace-nowrap animate-scroll">
+							<span className="mr-8">Last message: {message}</span>
+							<span className="mr-8">Last message: {message}</span>{' '}
 						</div>
 					</div>
 				</div>
-				<div className="button-container">
-					<button onClick={() => sendCommand('toggle')}>▶️⏸ Play/Pause</button>
-					<button onClick={() => sendCommand('volume/up')}>🔊 Volume Up</button>
-					<button onClick={() => sendCommand('volume/down')}>🔉 Volume Down</button>
-					<button onClick={() => sendCommand('mute')}>🔇 Mute</button>
+				<div
+					id="button-container"
+					className="flex flex-col items-center w-full min-w-[250px] max-w-[400px] gap-3 sm:gap-4"
+				>
+					<button className="custom-button" onClick={() => sendCommand('toggle')}>
+						▶️⏸ Play/Pause
+					</button>
+					<button className="custom-button" onClick={() => sendCommand('volume/up')}>
+						🔊 Volume Up
+					</button>
+					<button className="custom-button" onClick={() => sendCommand('volume/down')}>
+						🔉 Volume Down
+					</button>
+					<button className="custom-button" onClick={() => sendCommand('mute')}>
+						🔇 Mute
+					</button>
 				</div>
 			</div>
 			<VoiceCommandButton />

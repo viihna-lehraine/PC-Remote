@@ -1,0 +1,60 @@
+/* File: frontend/src/styles/globals.css */
+
+#chat-toggle {
+	background: #007bff;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#chat-container {
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.custom-button {
+	@apply px-3 py-2 bg-blue-600 text-white rounded-md cursor-pointer;
+	background: linear-gradient(135deg, #b02bb5d2, #d45bb5d2);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+	min-height: 2rem;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.custom-button:hover {
+	background: linear-gradient(135deg, #404040, #282828);
+	box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
+}
+
+.custom-button::before {
+	content: '';
+	position: absolute;
+	inset: -2px;
+	border-radius: 10px;
+	background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+	opacity: 0;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.custom-button:hover::before {
+	opacity: 1;
+}
+
+.custom-button:focus,
+.custom-button:focus-visible {
+	outline: 4px auto -webkit-focus-ring-color;
+}
+
+.custom-button:active {
+	transform: scale(0.96);
+	box-shadow: none;
+}
+
+#marquee {
+	animation: scrollText 12s linear infinite;
+}
+
+#message {
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
