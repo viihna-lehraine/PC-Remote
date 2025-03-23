@@ -9,6 +9,14 @@ backend/config
 tls
 *.env
 .env
+.sops/*
+
+*.asc
+
+db/data
+vault/data
+.sys/scripts/reissue_certs.sh
+scripts/unseal.sh
 
 logs
 *.log

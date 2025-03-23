@@ -25,27 +25,41 @@ jobs:
               with:
                   node-version: 20
                   cache: 'pnpm'
+                  cache-dependency-path: 'pnpm-lock.yaml, frontend/pnpm-lock.yaml, backend/pnpm-lock.yaml'
 
             - name: Install dependencies
               run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies" && exit 1)
 
+            - name: Cache pnpm modules
+              uses: actions/cache@v2
+              with:
+                  path: ~/.pnpm-store
+                  key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-
+
             - name: Build frontend
-              run: pnpm --filter frontend run build || (echo "Build failed ❌" && exit 1)
+              run: pnpm --filter frontend run build > frontend_build.log || (echo "Build failed ❌" && exit 1)
 
             - name: Build backend
-              run: pnpm --filter backend run build || (echo "Build failed ❌" && exit 1)
+              run: pnpm --filter backend run build > backend_build.log || (echo "Build failed ❌" && exit 1)
 
             - name: Upload build logs
               if: failure()
               uses: actions/upload-artifact@v4
               with:
                   name: build-logs
-                  path: build.log
+                  path: |
+                      frontend_build.log
+                      backend_build.log
+
+            - name: Install jq
+              run: sudo apt-get install jq
 
             - name: Notify Discord on success
               if: success()
               run: |
-                  BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                  BUILD_TIME=$(TZ="America/New_York" date +"%Y-%m-%dT%H:%M:%SZ")
                   curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg time "$BUILD_TIME" --arg sha "${{ github.sha }}" --arg actor "${{ github.actor }}" --arg branch "${{ github.ref_name }}" --arg msg "${{ github.event.head_commit.message || 'No commit message' }}" --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" '{
                     embeds: [{
                   title: "✅ PC Remote Build Succeeded",
@@ -64,7 +78,7 @@ jobs:
             - name: Notify Discord on failure
               if: failure()
               run: |
-                  BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+                  BUILD_TIME=$(TZ="America/New_York" date +"%Y-%m-%dT%H:%M:%SZ")
                   curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg time "$BUILD_TIME" --arg sha "${{ github.sha }}" --arg actor "${{ github.actor }}" --arg branch "${{ github.ref_name }}" --arg msg "${{ github.event.head_commit.message || 'No commit message' }}" --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" '{
                     embeds: [{
                       title: "❌ PC Remote Build Failed",

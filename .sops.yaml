@@ -1,0 +1,10 @@
+# File: .sops.yaml
+
+creation_rules:
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(unseal_keys|data)$'
+      path_regex: '(usk|approle)\.json$'
+
+    - pgp: 'B5BC332A603B022E21E46F2DA18BAE412BC0A77C'
+      encrypted_regex: '^(unseal_keys|data)$'
+      path_regex: '^secrets/tokens/\.vault-root-token$'

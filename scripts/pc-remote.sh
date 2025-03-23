@@ -116,17 +116,17 @@ print_help() {
 ### === SERVICE MANAGEMENT FUNCTIONS === ###
 destroy_services() {
 	echo "Destroying all containers..."
-	docker compose -f "$DOCKER_COMPOSE_FILE" down -v
+	docker compose -f "$DOCKER_COMPOSE_FILE" -f "$DIR_NAME/docker-compose.override.yml" down -v
 	echo "${GREEN}All containers removed.${NC}"
 }
 
 start_services() {
 	if [ "$DOCKER_UP_DETACHED" = true ]; then
 		echo "${CYAN}Starting services in detached mode...${NC}"
-		docker compose -f "$DOCKER_COMPOSE_FILE" up -d
+		docker compose -f "$DOCKER_COMPOSE_FILE" -f "$DIR_NAME/docker-compose.override.yml" up -d
 	else
 		echo "${CYAN}Starting services in foreground...${NC}"
-		docker compose -f "$DOCKER_COMPOSE_FILE" up
+		docker compose -f "$DOCKER_COMPOSE_FILE" -f "$DIR_NAME/docker-compose.override.yml" up
 	fi
 }
 

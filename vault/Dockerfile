@@ -4,7 +4,10 @@
 FROM hashicorp/vault:1.14
 
 # install ca-certificates and update them
-RUN apk update && apk add ca-certificates && update-ca-certificates
+RUN apk update && apk add --no-cache curl ca-certificates && update-ca-certificates
+
+COPY init/configure.sh /vault/init/configure.sh
+RUN chmod +x /vault/init/configure.sh
 
 # copy custom Vault configuration files (optional)
 COPY config/config.hcl /vault/config/config.hcl

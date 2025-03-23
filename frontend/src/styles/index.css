@@ -1,10 +1,10 @@
 /* File: frontend/src/styles/index.css */
 
+@import './globals.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './globals.css';
 
 @layer base {
 	:root {

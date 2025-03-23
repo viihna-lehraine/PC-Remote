@@ -14,7 +14,10 @@ export const enforceReverseProxy = (app: FastifyInstance) => {
 		req.log.info(`[Proxy Trust] Client IP: ${realClientIP || 'N/A'}, Source IP: ${sourceIP}`);
 
 		if (!getViteStatus()) {
-			if (!xfwd || !isFromTrustedProxy(sourceIP)) {
+			const trusted = isFromTrustedProxy(sourceIP);
+			req.log.info(`[Proxy Trust] isFromTrustedProxy(${sourceIP}) → ${trusted}`);
+
+			if (!xfwd || !trusted) {
 				req.log.warn(`[Security] Rejected request from untrusted source IP: ${sourceIP}`);
 				return reply.code(403).send({ error: 'Access denied' });
 			}

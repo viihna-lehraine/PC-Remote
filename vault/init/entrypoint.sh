@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# File: vault/init/entrypoint.sh
+
 set -e
 
 echo "Starting Vault configuration..."
