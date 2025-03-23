@@ -27,9 +27,6 @@ jobs:
                   cache: 'pnpm'
                   cache-dependency-path: 'pnpm-lock.yaml, frontend/pnpm-lock.yaml, backend/pnpm-lock.yaml'
 
-            - name: Install dependencies
-              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies" && exit 1)
-
             - name: Cache pnpm modules
               uses: actions/cache@v2
               with:
@@ -37,6 +34,9 @@ jobs:
                   key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
                   restore-keys: |
                       ${{ runner.os }}-pnpm-
+
+            - name: Install dependencies
+              run: pnpm install --no-frozen-lockfile || (echo "Failed to install dependencies" && exit 1)
 
             - name: Build frontend
               run: pnpm --filter frontend run build > frontend_build.log || (echo "Build failed ❌" && exit 1)
