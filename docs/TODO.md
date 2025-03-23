@@ -9,7 +9,10 @@ To Do
 6. Check that all filesystems have root password disabled
 7. Orchestrate TLS cert rotation via Vault
 8. Create role for Backend that allows it to connect to Database and read other necessary secrets
-
+9. Configure Tailscale as WAN endpoint
+10. Ensure that only intentionally exposed endpoints are accessible for each container
+11. Write interactive script for testing endpoints
+12. Implement secure way of requesting client cert from Vault
 
 ---
 
