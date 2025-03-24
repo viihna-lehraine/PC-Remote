@@ -20,6 +20,22 @@ services:
               read_only: true
         ports:
             - '4590:4590'
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'pg_isready',
+                    '-U',
+                    'postgres',
+                    '-d',
+                    'postgres',
+                    '-h',
+                    'localhost',
+                    '-p',
+                    '4590'
+                ]
+            timeout: 3s
+            retries: 10
         command: ['postgres', '-c', 'config_file=/etc/postgresql/postgresql.conf']
 
     nginx:
@@ -78,6 +94,8 @@ services:
             interval: 5s
             timeout: 3s
             retries: 20
+        extra_hosts:
+            - 'pc-remote-db:192.168.50.10'
         command:
             [
                 '/bin/sh',

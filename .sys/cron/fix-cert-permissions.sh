@@ -1,0 +1,1 @@
+/usr/local/sbin/fix-cert-permissions.sh

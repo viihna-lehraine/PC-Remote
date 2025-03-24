@@ -53,6 +53,9 @@ jobs:
                       frontend_build.log
                       backend_build.log
 
+            - name: Vault Health Check
+              run: ./scripts/vault/verify.sh
+
             - name: Install jq
               run: sudo apt-get install jq
 

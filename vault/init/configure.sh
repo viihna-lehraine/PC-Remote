@@ -5,6 +5,8 @@
 set -e
 
 APPROLE_TMP="/tmp/approle"
+MAX_RETRIES=10
+
 mkdir -p "$APPROLE_TMP"
 
 echo "[*] Applying policy..."
@@ -25,6 +27,11 @@ else
 fi
 
 # configure DB connection
+DB_PASS=$(vault kv get -field=vault_mgr secret/pc-remote/db-creds 2>/dev/null || true)
+if [ -z "$DB_PASS" ]; then
+	echo "[✗] Failed to retrieve DB password from Vault. Aborting."
+	exit 1
+fi
 if ! vault read postgresql/config/pc-remote-db >/dev/null 2>&1; then
 	echo "[*] Configuring PostgreSQL connection..."
 	vault write postgresql/config/pc-remote-db \
@@ -32,7 +39,7 @@ if ! vault read postgresql/config/pc-remote-db >/dev/null 2>&1; then
 		allowed_roles=viihna-app \
 		connection_url="postgresql://{{username}}:{{password}}@pc-remote-db:4590/postgres?sslmode=verify-full&sslrootcert=/vault/ca/rootCA.crt" \
 		username="vault_mgr" \
-		password="changeme"
+		password="$DB_PASS"
 else
 	echo "[✓] PostgreSQL connection already configured."
 fi
@@ -64,15 +71,41 @@ else
 	echo "[✓] AppRole pc-remote-role already exists."
 fi
 
-# save AppRole creds
-echo "[*] Fetching AppRole credentials..."
-vault read -field=role_id auth/approle/role/pc-remote-role/role-id >/vault/approle/role_id
-vault write -f -field=secret_id auth/approle/role/pc-remote-role/secret-id >/vault/approle/secret_id
+echo "[*] Waiting briefly to ensure AppRole is queryable..."
+sleep 2
 
-echo "[✓] Vault AppRole credentials saved to /vault/approle"
+# save AppRole creds
+for i in $(seq 1 $MAX_RETRIES); do
+	echo "[*] Attempt $i: Fetching AppRole credentials..."
+
+	# attempt to get ROLE_ID
+	ROLE_ID_JSON=$(vault read -format=json auth/approle/role/pc-remote-role/role-id 2>/dev/null || true)
+	ROLE_ID=$(echo "$ROLE_ID_JSON" | jq -r '.data.role_id' 2>/dev/null || true)
+
+	# attempt to get SECRET_ID
+	SECRET_ID_JSON=$(vault write -f -format=json auth/approle/role/pc-remote-role/secret-id 2>/dev/null || true)
+	SECRET_ID=$(echo "$SECRET_ID_JSON" | jq -r '.data.secret_id' 2>/dev/null || true)
+
+	# check both are non-empty
+	if [ -n "$ROLE_ID" ] && [ -n "$SECRET_ID" ]; then
+		echo "$ROLE_ID" >/vault/approle/role_id
+		echo "$SECRET_ID" >/vault/approle/secret_id
+		echo "[✓] Vault AppRole credentials saved to /vault/approle"
+		break
+	else
+		echo "[!] Failed to fetch AppRole credentials, retrying..."
+		sleep 2
+	fi
+done
+
+# final bailout if still empty
+if [ -z "$ROLE_ID" ] || [ -z "$SECRET_ID" ]; then
+	echo "[✗] Gave up after $MAX_RETRIES attempts — AppRole credential fetch failed."
+	exit 1
+fi
 
 echo "[*] Enabling PKI secrets engine..."
-if ! vault secrets list -format=json | jq -e '."pki/" == null'; then
+if ! vault secrets list -format=json | jq -e '."pki/" == null' >/dev/null; then
 	echo "[*] Enabling PKI secrets engine..."
 	vault secrets enable -path=pki pki
 else
@@ -93,3 +126,5 @@ if ! vault read pki/roles/$ROLE_NAME >/dev/null 2>&1; then
 else
 	echo "[✓] Role $ROLE_NAME already exists."
 fi
+
+chown -R viihna:viihna /vault/approle

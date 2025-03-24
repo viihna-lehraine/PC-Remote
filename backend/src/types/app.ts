@@ -6,6 +6,16 @@ export interface AppRegex {
 	username: RegExp;
 }
 
+export interface AppRoleCredentials {
+	role_id: string;
+	secret_id: string;
+}
+
+export type CachedValue<T> = {
+	data: T;
+	expires: number;
+};
+
 export interface Denylist {
 	ips: string[];
 	userAgents: string[];
@@ -14,6 +24,8 @@ export interface Denylist {
 
 export interface EnvVars {
 	NODE_ENV: NodeEnv;
+
+	APPROLE_CREDS_PATH: string;
 
 	DOCKER_SUBNET_1: string;
 	DOCKER_SUBNET_2: string;
@@ -28,18 +40,30 @@ export interface EnvVars {
 	LOG_DIR: string;
 	LOG_LEVEL: string;
 
+	SOPS_CONFIG: string;
+	SOPS_PGP_KEY_ID: string;
+
+	VAULT_ADDR: string;
 	VAULT_API_VERSION: string;
-	VAULT_ENDPOINT: string;
 	VAULT_TOKEN: string;
-	BACKEND_DB_APPROLE: string;
 
 	DB_HOST: string;
 	DB_PORT: number;
 	DB_NAME: string;
+
+	ROOT_CA_PATH: string;
 }
 
 export type NodeEnv = 'dev' | 'prod';
 
 export interface SanitationUtils {
 	html(userInput: string): string;
+}
+
+export interface VaultDBCredentials {
+	username: string;
+	password: string;
+	ttl: number;
+	lease_id: string;
+	lease_duration: number;
 }

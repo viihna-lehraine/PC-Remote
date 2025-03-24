@@ -1,0 +1,1 @@
+{"version":3,"file":"rateLimit.js","sourceRoot":"","sources":["../../src/plugins/rateLimit.ts"],"names":[],"mappings":"AAAA,yCAAyC;AAEzC,OAAO,EAAE,MAAM,gBAAgB,CAAC;AAChC,OAAO,SAAS,MAAM,qBAAqB,CAAC;AAE5C,eAAe,EAAE,CAAC,KAAK,UAAU,cAAc,CAAC,GAAG;IAClD,GAAG,CAAC,QAAQ,CAAC,SAAS,EAAE;QACvB,GAAG,EAAE,GAAG;QACR,UAAU,EAAE,UAAU;KACtB,CAAC,CAAC;AACJ,CAAC,CAAC,CAAC"}

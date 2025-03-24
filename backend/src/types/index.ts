@@ -1,3 +1,12 @@
 // File: backend/src/types/index.ts
 
-export type { AppRegex, Denylist, EnvVars, NodeEnv, SanitationUtils } from './app.js';
+export type {
+	AppRegex,
+	AppRoleCredentials,
+	CachedValue,
+	Denylist,
+	EnvVars,
+	NodeEnv,
+	SanitationUtils,
+	VaultDBCredentials
+} from './app.js';

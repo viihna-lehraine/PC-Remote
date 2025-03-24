@@ -31,6 +31,7 @@ const loadEnv = (filePath = envPath) => {
         };
         return {
             NODE_ENV: getEnvVar('NODE_ENV', parseString),
+            APPROLE_CREDS_PATH: getEnvVar('APPROLE_CREDS_PATH', parseString),
             DOCKER_SUBNET_1: getEnvVar('DOCKER_SUBNET_1', parseString),
             DOCKER_SUBNET_2: getEnvVar('DOCKER_SUBNET_2', parseString),
             LAN_IP_ADDR: getEnvVar('LAN_IP_ADDR', parseString),
@@ -40,13 +41,15 @@ const loadEnv = (filePath = envPath) => {
             BACKEND_PORT: getEnvVar('BACKEND_PORT', parseIntStrict),
             DEV_PORT: getEnvVar('DEV_PORT', parseIntStrict),
             WS_PORT: getEnvVar('WS_PORT', parseIntStrict),
+            SOPS_CONFIG: getEnvVar('SOPS_CONFIG', parseString),
+            SOPS_PGP_KEY_ID: getEnvVar('SOPS_PGP_KEY_ID', parseString),
+            VAULT_ADDR: getEnvVar('VAULT_ADDR', parseString),
             VAULT_API_VERSION: getEnvVar('VAULT_API_VERSION', parseString),
-            VAULT_ENDPOINT: getEnvVar('VAULT_ENDPOINT', parseString),
             VAULT_TOKEN: getEnvVar('VAULT_TOKEN', parseString),
-            BACKEND_DB_APPROLE: getEnvVar('BACKEND_DB_APPROLE', parseString),
             DB_HOST: getEnvVar('DB_HOST', parseString),
             DB_PORT: getEnvVar('DB_PORT', parseIntStrict),
-            DB_NAME: getEnvVar('DB_NAME', parseString)
+            DB_NAME: getEnvVar('DB_NAME', parseString),
+            ROOT_CA_PATH: getEnvVar('ROOT_CA_PATH', parseString)
         };
     }
     catch (error) {

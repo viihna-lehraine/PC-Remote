@@ -2,9 +2,25 @@
 
 creation_rules:
     - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
-      encrypted_regex: '^(unseal_keys|data)$'
+      encrypted_regex: '^(unseal_keys|data|root_token)$'
       path_regex: '(usk|approle)\.json$'
 
-    - pgp: 'B5BC332A603B022E21E46F2DA18BAE412BC0A77C'
-      encrypted_regex: '^(unseal_keys|data)$'
-      path_regex: '^secrets/tokens/\.vault-root-token$'
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(.*)$'
+      path_regex: '\.vault-root-token(\.sops)?$'
+
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(.*)$'
+      path_regex: '^/home/viihna/Projects/pc-remote/secrets/tokens/\.vault-root-token$'
+
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(role_id|secret_id)$'
+      path_regex: 'secrets/approle/credentials\.json$'
+
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(.*)$'
+      path_regex: '\.vault-root-token\.sops$'
+
+    - pgp: B5BC332A603B022E21E46F2DA18BAE412BC0A77C
+      encrypted_regex: '^(.*)$'
+      path_regex: '\.vault-root-token$'
