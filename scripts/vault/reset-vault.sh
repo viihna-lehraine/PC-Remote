@@ -5,13 +5,14 @@
 set -euo pipefail
 
 VAULT_CONTAINER="pc-remote-vault-1"
-VAULT_DATA_DIR="/home/viihna/Projects/pc-remote/vault/data"
 PROJECT_ROOT="/home/viihna/Projects/pc-remote"
 UNSEAL_KEYS_JSON="$PROJECT_ROOT/secrets/keys/usk.json"
 UNSEALED_TMP="$PROJECT_ROOT/secrets/keys/.usk.json"
 PLAIN_TOKEN_PATH="$PROJECT_ROOT/secrets/tokens/.vault-root-token"
 ENCRYPTED_TOKEN_PATH="$PROJECT_ROOT/secrets/tokens/.vault-root-token.sops"
 SOPS_CONFIG="$PROJECT_ROOT/.sops.yaml"
+VAULT_DATA_DIR="$PROJECT_ROOT/vault/data"
+VAULT_FILE_DIR="$PROJECT_ROOT/vault/file"
 
 export SOPS_CONFIG
 
@@ -27,17 +28,23 @@ echo "🚨 VAULT RESET SCRIPT 🚨"
 confirm
 
 echo "[*] Stopping and deleting Vault data volume..."
-docker compose down -v
+docker compose down -v --remove-orphans
+docker compose build --no-cache
 
 echo "[*] Wiping Vault data directory..."
 sudo rm -rf "$VAULT_DATA_DIR"/*
+sleep 1
+
+echo "[*] Wiping Vault file directory..."
+sudo rm -rf "$VAULT_FILE_DIR/*"
 sleep 1
 
 echo "[*] Starting Vault..."
 docker compose up -d vault
 
 echo "[*] Waiting for Vault to be healthy..."
-until curl --silent --insecure https://192.168.50.10:4425/v1/sys/health | grep -q '"initialized":false'; do
+until curl -sk -o /tmp/vault-health.json -w "%{http_code}" https://192.168.50.10:4425/v1/sys/health |
+	grep -Eq '501|503'; do
 	echo "[*] Waiting for uninitialized Vault..."
 	sleep 2
 done

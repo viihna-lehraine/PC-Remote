@@ -17,7 +17,16 @@ logs/vault/*
 secrets/approle/*
 secrets/tmp/*
 tls
+
+secrets/broken/*
+secrets/certs/*
+
+db/data
 vault/data/*
+vault/file/*
+vault/approle/role_id
+vault/approle/secret_id
+vault/approle/credentials.json
 
 notify-discord.sh
 

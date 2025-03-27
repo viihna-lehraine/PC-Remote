@@ -4,26 +4,28 @@
 
 set -e
 
-echo "Starting Vault configuration..."
+echo "Starting Vault configuration (running entrypoint.sh)..."
 
-echo "Configuring Root Certificate..."
-chmod 644 /vault/ca/rootCA.crt || true
-echo "Root Certificate configured."
+echo "Fixing permissions for mounted certificates..."
+chown -R vault:vault /vault/certs/vault
+chmod 600 /vault/certs/vault/vault.key
+chmod 644 /vault/certs/vault/vault.fullchain.crt
+chmod 644 /vault/ca/root/rootCA.crt || true
+echo "[✓] Vault cert permissions configured."
 
-echo "Configuring CA Certificates..."
-chown -R vault:vault /vault/certs
-chmod 600 /vault/certs/vault.key
-chmod 644 /vault/certs/vault.crt
-echo "CA Certificates configured."
-
-echo "Installing CA Certificates package and running CA certs update..."
+echo "Installing CA certificates package..."
 apk add --no-cache ca-certificates
+
+echo "Copying rootCA into system trust store..."
+cp /vault/ca/root/rootCA.crt /usr/local/share/ca-certificates/rootCA.crt
+
+echo "Updating system trust store..."
 update-ca-certificates
-cp /vault/ca/rootCA.crt /etc/ssl/certs/
-echo "CA Certificates package installed and Vault certs updated."
+echo "[✓] Root CA trusted by system."
 
-echo "Setting environment variables..."
-export VAULT_CACERT=/vault/ca/rootCA.crt
+echo "Exporting Vault environment variables..."
+export VAULT_CACERT=/etc/ssl/certs/rootCA.crt
+echo "[✓] VAULT_CACERT set to /etc/ssl/certs/rootCA.crt"
 
-echo "Vault is running and ready for operation."
-exit 0
+echo "Vault is ready to launch (entrypoint.sh completed)."
+exec vault server -config=/vault/config/config.hcl

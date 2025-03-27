@@ -40,6 +40,9 @@ sudo -u viihna env SOPS_PGP_KEY_ID="$SOPS_PGP_KEY_ID" \
 echo "[*] Shredding temporary plaintext JSON..."
 shred -u "$TEMP_JSON"
 
+echo "[*] Taking ownership of AppRole plaintext files before shredding..."
+sudo chown viihna:viihna "$ROLE_ID_PATH" "$SECRET_ID_PATH"
+
 echo "[*] Shredding plaintext AppRole files..."
 shred -u "$ROLE_ID_PATH" "$SECRET_ID_PATH"
 

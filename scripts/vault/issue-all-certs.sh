@@ -53,7 +53,7 @@ for entry in "${SERVICES[@]}"; do
 done
 
 # Apply correct ownership and permissions
-sudo scripts/vault/fix-cert-permissions.sh
+sudo ./fix-cert-permissions.sh
 
 echo "[*] Restarting services to pick up new certs..."
 docker restart pc-remote-nginx pc-remote-db pc-remote-backend pc-remote-vault-1

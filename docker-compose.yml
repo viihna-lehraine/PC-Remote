@@ -1,13 +1,19 @@
+# File: docker-compose.yml
+
+name: pc-remote
+
 services:
     db:
         build: ./db
         container_name: pc-remote-db
         restart: on-failure
-        user: '999:999'
+        user: '0:0'
+        environment:
+            - POSTGRES_PASSWORD
         volumes:
-            - /etc/ssl/projects/pc-remote/services/db:/var/lib/postgresql/certs:ro
-            - /etc/ssl/projects/pc-remote/ca/:/var/lib/postgresql/ca:ro
-            - /etc/ssl/projects/pc-remote/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
+            - /home/viihna/Projects/pc-remote/secrets/certs/services/db:/var/lib/postgresql/certs:ro
+            - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/var/lib/postgresql/ca:ro
+            - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
             - /home/viihna/Projects/pc-remote/db/data/:/var/lib/postgresql/data
             - /home/viihna/Projects/pc-remote/db/init:/docker-entrypoint.initdb.d
             - /home/viihna/Projects/pc-remote/db/conf.d/postgresql.conf:/etc/postgresql/postgresql.conf
@@ -45,8 +51,8 @@ services:
             - '192.168.50.10:444:443'
         restart: unless-stopped
         volumes:
-            - /etc/ssl/projects/pc-remote/services/nginx/:/etc/nginx/certs/:ro
-            - /etc/ssl/projects/pc-remote/ca/:/etc/nginx/ca/:ro
+            - /home/viihna/Projects/pc-remote/secrets/certs/services/nginx/:/etc/nginx/certs/:ro
+            - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/etc/nginx/ca/:ro
             - /home/viihna/Projects/pc-remote/logs/nginx:/var/log/nginx
             - type: bind
               source: /etc/ssl/projects/pc-remote/dhparam.pem
@@ -58,27 +64,28 @@ services:
     vault:
         build: ./vault
         user: '0:0'
-        restart: on-failure
+        restart: no
         cap_add:
             - IPC_LOCK
         environment:
             - VAULT_ADDR=https://192.168.50.10:4425
             - VAULT_API_ADDR=https://192.168.50.10:4425
-            - VAULT_CACERT=/vault/ca/rootCA.crt
+            - VAULT_CACERT=/vault/ca/root/rootCA.crt
         ports:
             - '192.168.50.10:4425:4425'
             - '192.168.50.10:4426:4426'
         volumes:
-            - /etc/ssl/projects/pc-remote/services/vault:/vault/certs:rw
-            - /etc/ssl/projects/pc-remote/ca:/vault/ca:ro
-            - /etc/ssl/projects/pc-remote/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:rw
+            - /home/viihna/Projects/pc-remote/secrets/certs/services:/vault/certs:rw
+            - /home/viihna/Projects/pc-remote/secrets/certs/ca/:/vault/ca:rw
             - /home/viihna/Projects/pc-remote/vault/data:/vault/data
             - /home/viihna/Projects/pc-remote/vault/config:/vault/config
+            - /home/viihna/Projects/pc-remote/vault/file:/vault/file
             - /home/viihna/Projects/pc-remote/vault/policies:/vault/policies:ro
-            - /home/viihna/Projects/pc-remote/vault/init/entrypoint.sh:/vault/entrypoint.sh:ro
+            - /home/viihna/Projects/pc-remote/vault/init/entrypoint.sh:/vault/init/entrypoint.sh
+            - /home/viihna/Projects/pc-remote/vault/init/configure.sh:/vault/init/configure.sh
             - /home/viihna/Projects/pc-remote/vault/approle:/vault/approle
             - type: bind
-              source: /etc/ssl/projects/pc-remote/dhparam.pem
+              source: /home/viihna/Projects/pc-remote/secrets/certs/dhparam.pem
               target: /vault/dhparam.pem
               read_only: true
         healthcheck:
@@ -88,7 +95,7 @@ services:
                     'curl',
                     '-s',
                     '--cacert',
-                    '/vault/ca/rootCA.crt',
+                    '/vault/ca/root/rootCA.crt',
                     'https://192.168.50.10:4425/v1/sys/health'
                 ]
             interval: 5s
@@ -96,9 +103,3 @@ services:
             retries: 20
         extra_hosts:
             - 'pc-remote-db:192.168.50.10'
-        command:
-            [
-                '/bin/sh',
-                '-c',
-                '/vault/entrypoint.sh && vault server -config=/vault/config/config.hcl'
-            ]
