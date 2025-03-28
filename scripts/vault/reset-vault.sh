@@ -39,6 +39,16 @@ echo "[*] Wiping Vault file directory..."
 sudo rm -rf "$VAULT_FILE_DIR/*"
 sleep 1
 
+echo "[*] Wiping old vault_mgr password and role marker..."
+sudo rm -f "$PROJECT_ROOT/db/secrets/vault_mgr_password"
+sudo rm -f "$PROJECT_ROOT/db/secrets/vault_mgr_password.gpg"
+sudo rm -f "$PROJECT_ROOT/db/data/.vault-role-created"
+sudo rm -f "$PROJECT_ROOT/secrets/tokens/.vault-admin-token"
+sudo rm -f "$PROJECT_ROOT/secrets/tokens/.vault-admin-token.gpg"
+sudo rm -f "$PROJECT_ROOT/secrets/tokens/.vault-service-token"
+sudo rm -f "$PROJECT_ROOT/secrets/tokens/.vault-service-token.gpg"
+echo "[✓] Cleared stale vault_mgr secrets and role marker."
+
 echo "[*] Starting Vault..."
 docker compose up -d vault
 
@@ -76,5 +86,5 @@ echo "[✓] Vault has been reset and reinitialized."
 echo "[✓] Keys stored securely in: $UNSEAL_KEYS_JSON"
 echo "[✓] Root token encrypted at: $ENCRYPTED_TOKEN_PATH"
 
-./notify-discord.sh "🚨 Vault has been reset and reinitialized on sharkie"
-./notify-discord.sh "✅ Vault is up and fully configured"
+# ./notify-discord.sh "🚨 Vault has been reset and reinitialized on sharkie"
+# ./notify-discord.sh "✅ Vault is up and fully configured"

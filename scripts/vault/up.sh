@@ -5,12 +5,12 @@
 set -euo pipefail
 
 PROJECT_ROOT="/home/viihna/Projects/pc-remote"
-
 APPROLE_CHECK_ATTEMPTS=10
 APPROLE_VERIFIED=0
 DB_CERT_PATH="$PROJECT_ROOT/secrets/certs/services/db/db.fullchain.crt"
 ENCRYPTED_TOKEN_PATH="/home/viihna/Projects/pc-remote/secrets/tokens/.vault-root-token.sops"
 DECRYPTED_TOKEN_PATH="/home/viihna/Projects/pc-remote/secrets/tokens/.vault-root-token"
+GPG_KEY_ID="B5BC332A603B022E21E46F2DA18BAE412BC0A77C"
 SCRIPTS_DIR="$PROJECT_ROOT/scripts"
 SOPS_CONFIG="$PROJECT_ROOT/.sops.yaml"
 VAULT_ADDR="https://192.168.50.10:4425"
@@ -72,7 +72,7 @@ echo "[*] Logging into Vault on host (to run host CLI commands)..."
 "$SCRIPTS_DIR/vault/vault-login.sh"
 
 echo "[*] Enabling Vault secrets engine"
-vault secrets enable -path=secret kv
+vault secrets enable -path=secret -version=2 kv
 
 echo "[*] Checking if vault_mgr DB password is already stored..."
 if ! vault kv get -mount=secret pc-remote/db-creds >/dev/null 2>&1; then
@@ -82,6 +82,10 @@ if ! vault kv get -mount=secret pc-remote/db-creds >/dev/null 2>&1; then
 else
 	echo "[✓] DB credentials already exist, skipping."
 fi
+
+echo "[*] Writing vault_mgr password to temporary file for DB access..."
+vault kv get -field=vault_mgr secret/pc-remote/db-creds >"$PROJECT_ROOT/db/secrets/vault_mgr_password"
+chmod 600 "$PROJECT_ROOT/db/secrets/vault_mgr_password"
 
 echo "[*] Checking if bootstrap DB superuser password exists..."
 if ! vault kv get -mount=secret pc-remote/db-init >/dev/null 2>&1; then
@@ -120,7 +124,6 @@ done
 echo "[✓] PostgreSQL is ready."
 
 echo "[*] Configuring Vault DB secrets engine..."
-DB_PASS=$(vault kv get -field=vault_mgr secret/pc-remote/db-creds)
 MAX_RETRIES=10
 RETRY_INTERVAL=3
 attempt=1
@@ -129,7 +132,7 @@ until vault write postgresql/config/pc-remote-db \
 	allowed_roles=viihna-app \
 	connection_url="postgresql://{{username}}:{{password}}@pc-remote-db:4590/postgres?sslmode=verify-full" \
 	username="vault_mgr" \
-	password="$DB_PASS"; do
+	password="$(vault kv get -field=vault_mgr secret/pc-remote/db-creds)"; do
 
 	echo "[!] Attempt $attempt failed. Retrying in $RETRY_INTERVAL seconds..."
 	sleep $RETRY_INTERVAL
@@ -148,7 +151,7 @@ vault write postgresql/config/pc-remote-db \
 	allowed_roles=viihna-app \
 	connection_url="postgresql://{{username}}:{{password}}@pc-remote-db:4590/postgres?sslmode=verify-full" \
 	username="vault_mgr" \
-	password="$DB_PASS" || echo "[✓] DB config already exists."
+	password="$(vault kv get -field=vault_mgr secret/pc-remote/db-creds)" || echo "[✓] DB config already exists."
 
 vault write postgresql/roles/viihna-app \
 	db_name=pc-remote-db \
@@ -168,7 +171,7 @@ fi
 echo "[*] Checking if session secret exists..."
 if ! vault kv get -mount=secret pc-remote/session-secret >/dev/null 2>&1; then
 	echo "[*] Generating and storing session secret..."
-	SESSION_SECRET=$(openssl rand -hex 64)
+	SESSION_SECRET=$(openssl rand -hex 32)
 	vault kv put -mount=secret pc-remote/session-secret session_secret="$SESSION_SECRET"
 	echo "[✓] Session secret stored in Vault at secret/pc-remote/session-secret"
 else
@@ -209,5 +212,61 @@ history -d "$(history 1)" 2>/dev/null || true
 
 sudo chmod 700 /home/viihna/Projects/pc-remote/db/data
 
+echo "[*] Cleaning up vault_mgr password file..."
+shred -u "$PROJECT_ROOT/db/secrets/vault_mgr_password"
+
+echo "[*] Rotating vault_mgr password in Vault..."
+vault kv put -mount=secret pc-remote/db-creds vault_mgr="$(openssl rand -base64 32)"
+echo "[✓] vault_mgr password rotated."
+
+echo "[*] Writing Admin and Service policies..."
+docker exec -e VAULT_TOKEN="$VAULT_TOKEN" pc-remote-vault-1 vault policy write \
+	pc-remote-service /vault/policies/pc-remote-service.hcl
+docker exec -e VAULT_TOKEN="$VAULT_TOKEN" pc-remote-vault-1 vault policy write \
+	pc-remote-admin /vault/policies/pc-remote-admin.hcl
+
+echo "[*] Creating standard token..."
+echo "[*] Writing standard token policy to Vault..."
+export VAULT_TOKEN="$VAULT_TOKEN"
+vault write auth/token/roles/pc-remote-service \
+	allowed_policies="pc-remote-service" \
+	period="24h" \
+	explicit_max_ttl="48h" \
+	orphan=true
+SERVICE_TOKEN=$(vault token create -policy=pc-remote-service -ttl=24h -format=json | jq -r '.auth.client_token')
+
+echo "$SERVICE_TOKEN" >"$PROJECT_ROOT/secrets/tokens/.vault-service-token"
+chmod 600 "$PROJECT_ROOT/secrets/tokens/.vault-service-token"
+
+echo "[*] Encrypting service token..."
+sops --config /dev/null --encrypt --pgp "$GPG_KEY_ID" --output "$PROJECT_ROOT/secrets/tokens/.vault-service-token.sops" "$PROJECT_ROOT/secrets/tokens/.vault-service-token"
+
+echo "[*] Shredding unencrypted service token..."
+shred -u "$PROJECT_ROOT/secrets/tokens/.vault-service-token"
+echo "[✓] Encrypted service token stored."
+
+echo "[*] Creating admin token..."
+export VAULT_TOKEN="$VAULT_TOKEN"
+vault write auth/token/roles/pc-remote-admin \
+	allowed_policies="pc-remote-admin" \
+	period="24h" \
+	explicit_max_ttl="48h" \
+	orphan=true
+ADMIN_TOKEN=$(vault token create -policy=pc-remote-admin -ttl=72h -format=json | jq -r '.auth.client_token')
+
+echo "$ADMIN_TOKEN" >"$PROJECT_ROOT/secrets/tokens/.vault-admin-token"
+chmod 600 "$PROJECT_ROOT/secrets/tokens/.vault-admin-token"
+
+echo "[*] Encrypting admin token..."
+sops --config /dev/null --encrypt --pgp "$GPG_KEY_ID" --output "$PROJECT_ROOT/secrets/tokens/.vault-admin-token.sops" "$PROJECT_ROOT/secrets/tokens/.vault-admin-token"
+
+echo "[*] Shredding unencrypted admin token..."
+shred -u "$PROJECT_ROOT/secrets/tokens/.vault-admin-token"
+echo "[✓] Encrypted admin token stored."
+
 ./verify.sh
-./notify-discord.sh "Vault stack initialized and configured successfully" success
+# ./notify-discord.sh "Vault stack initialized and configured successfully" success
+
+echo "[*] Purging root toke from memory..."
+unset VAULT_TOKEN
+echo "[*] Vault stack is up and running."

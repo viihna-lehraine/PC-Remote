@@ -2,23 +2,33 @@
 
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getDb } from '../db/client.js';
+import { appMode } from '../core/index.js';
 
-export function requireRole(role: string) {
-	return async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = request.session.get('user');
+export function requireRole(
+	role: string
+): ((request: FastifyRequest, reply: FastifyReply) => Promise<void>) | undefined {
+	if (appMode !== 'dev') {
+		return async function (request: FastifyRequest, reply: FastifyReply) {
+			const user = request.session.get('user');
 
-		if (!user) return reply.code(401).send({ error: 'Unauthorized' });
+			if (!user) return reply.code(401).send({ error: 'Unauthorized' });
 
-		const db = getDb();
-		const { rows } = await db.query(
-			`SELECT 1 FROM user_roles ur
-			 JOIN roles r ON ur.role_id = r.id
-			 WHERE ur.user_id = $1 AND r.name = $2`,
-			[user.id, role]
-		);
+			const db = getDb();
 
-		if (rows.length === 0) {
-			return reply.code(403).send({ error: 'Forbidden' });
-		}
-	};
+			if (db) {
+				const { rows } = await db.query(
+					`SELECT 1 FROM user_roles ur
+					 JOIN roles r ON ur.role_id = r.id
+					 WHERE ur.user_id = $1 AND r.name = $2`,
+					[user.id, role]
+				);
+
+				if (rows.length === 0) {
+					return reply.code(403).send({ error: 'Forbidden' });
+				}
+			}
+		};
+	} else {
+		return;
+	}
 }

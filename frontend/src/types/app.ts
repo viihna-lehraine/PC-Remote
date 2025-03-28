@@ -1,5 +1,10 @@
 // File: frontend/src/types/app.ts
 
+export interface File {
+	name: string;
+	type: 'directory' | 'file';
+}
+
 export interface WebSocketContextType {
 	socket: WebSocket | null;
 	status: WebSocketStatus;

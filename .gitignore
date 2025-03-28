@@ -18,6 +18,8 @@ secrets/approle/*
 secrets/tmp/*
 tls
 
+backend/dist/*
+
 secrets/broken/*
 secrets/certs/*
 
@@ -27,8 +29,6 @@ vault/file/*
 vault/approle/role_id
 vault/approle/secret_id
 vault/approle/credentials.json
-
-notify-discord.sh
 
 .env
 .vault-root-token

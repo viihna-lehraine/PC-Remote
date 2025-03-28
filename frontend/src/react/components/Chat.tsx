@@ -1,8 +1,7 @@
-// File: frontend/src/components/Chat.tsx
+// File: frontend/src/react/components/Chat.tsx
 
 import { useEffect, useState, useRef } from 'react';
 import { useWebSocket } from '../hooks/useWebSocket.js';
-import '../styles/index.css';
 
 const Chat = () => {
 	const [messages, setMessages] = useState<string[]>([]);

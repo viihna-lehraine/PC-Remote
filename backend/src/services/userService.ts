@@ -23,9 +23,12 @@ export async function createUser(
 	const hashedPassword = await hashPassword(password);
 
 	const db = getDb();
-	await db.query(`INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3)`, [
-		username,
-		hashedPassword,
-		email ?? null
-	]);
+
+	if (db) {
+		await db.query(`INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3)`, [
+			username,
+			hashedPassword,
+			email ?? null
+		]);
+	}
 }

@@ -1,6 +1,5 @@
 -- File: db/init/02_create_vault_user.sql
 
-CREATE ROLE vault_mgr WITH LOGIN PASSWORD 'changeme';
 GRANT CONNECT ON DATABASE postgres TO vault_mgr;
 GRANT USAGE ON SCHEMA public TO vault_mgr;
 GRANT CREATE ON SCHEMA public TO vault_mgr;

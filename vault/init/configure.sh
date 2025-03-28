@@ -100,7 +100,7 @@ for service in $SERVICES; do
 
 	case "$service" in
 	db)
-		DOMAIN_LIST="pc-remote-db.local db.local pc-remote-db $DOMAIN_SUFFIX"
+		DOMAIN_LIST="pc-remote-db pc-remote-db.local db.local $DOMAIN_SUFFIX"
 		IP_SANS="192.168.50.10"
 		SUBDOMAINS=false
 		ALLOW_BARE=true

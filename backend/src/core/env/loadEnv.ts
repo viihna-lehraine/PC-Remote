@@ -1,16 +1,23 @@
 // File: backend/src/core/loadEnv.ts
 
-import { EnvVars, NodeEnv } from '../types/index.js';
+import { EnvVars, NodeEnv } from '../../types/index.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { parseIntStrict, parseString } from '../utils/parse.js';
+import { appMode } from './loadAppMode.js';
+import { absolutePaths } from '../../data/paths.js';
+import { parseIntStrict, parseString } from '../../utils/parse.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let envPath: string;
 
-const envPath = path.resolve(__dirname, '../../config/env/.env');
+if (appMode === 'dev') {
+	envPath = absolutePaths.devEnv.main;
+} else if (appMode === 'devd') {
+	envPath = absolutePaths.devDEnv.main;
+} else if (appMode === 'prod') {
+	envPath = absolutePaths.prodEnv.main;
+} else {
+	throw new Error(`Invalid APP_MODE: ${appMode}`);
+}
 
 dotenv.config({ path: envPath });
 

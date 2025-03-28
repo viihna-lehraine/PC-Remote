@@ -3,13 +3,14 @@
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 
 export function requireAuth(
-	request: FastifyRequest,
-	reply: FastifyReply,
+	_request: FastifyRequest,
+	_reply: FastifyReply,
 	done: HookHandlerDoneFunction
 ) {
-	if (!request.session.get('user')) {
-		return reply.code(401).send({ error: 'Unauthorized' });
-	}
+	// console.log('Session User:', request.session.get('user')); // TODO: Uncomment this
+	// if (!request.session.get('user')) {
+	// 	return reply.code(401).send({ error: 'Unauthorized' });
+	// }
 
 	done();
 	return true;

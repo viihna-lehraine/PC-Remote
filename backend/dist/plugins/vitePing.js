@@ -11,7 +11,7 @@ export const viteReady = Promise.race([
         setTimeout(() => {
             console.log('[VITE CHECK] Timeout reached. Proceeding without dev server.');
             resolve();
-        }, 2500);
+        }, 1500);
     })
 ]);
 export const getViteStatus = () => viteIsRunning;

@@ -1,15 +1,16 @@
-// File: frontend/src/components/WebSocketProvider.tsx
+// File: frontend/src/react/components/WebSocketProvider.tsx
 
-import { WebSocketStatus } from '../types/index.js';
+import { WebSocketStatus } from '../../types/index.js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { WebSocketContext } from '../context/WebSocketContext.js';
 
 const WS_URL = (() => {
 	const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-	const hostWithPort = window.location.host;
-	return `${protocol}//${hostWithPort}/ws/`;
+	const host = window.location.hostname;
+	return `${protocol}//${host}:3060/ws/`;
 })();
-console.log(`[Websocket] Connecting to: ${WS_URL}`);
+// const WS_URL = 'ws://192.168.50.10:3060/ws';
+console.log(`[Websocket] Connecting to: ${WS_URL} [top of WSP file]`);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [status, setStatus] = useState<WebSocketStatus>('connecting');

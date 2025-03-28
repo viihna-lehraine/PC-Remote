@@ -1,7 +1,11 @@
 // File: backend/src/types/app.ts
 
+export type AppMode = 'dev' | 'devd' | 'prod';
+
 export interface AppRegex {
+	css: RegExp;
 	email: RegExp;
+	js: RegExp;
 	password: RegExp;
 	username: RegExp;
 }
@@ -54,10 +58,26 @@ export interface EnvVars {
 	ROOT_CA_PATH: string;
 }
 
+export interface Flags {
+	USE_TLS: boolean;
+	USE_VAULT: boolean;
+	USE_VAULT_CACHE: boolean;
+}
+
 export type NodeEnv = 'dev' | 'prod';
 
 export interface SanitationUtils {
 	html(userInput: string): string;
+}
+
+export interface SecureSessionPluginOptions {
+	key: Buffer;
+	cookie: {
+		path: string;
+		httpOnly: boolean;
+		sameSite: 'strict' | 'lax' | 'none';
+		secure: boolean;
+	};
 }
 
 export interface VaultDBCredentials {

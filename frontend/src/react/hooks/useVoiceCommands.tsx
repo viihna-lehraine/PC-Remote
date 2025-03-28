@@ -1,6 +1,6 @@
-// File: frontend/src/hooks/useVoiceCommands.tsx
+// File: frontend/src/react/hooks/useVoiceCommands.tsx
 
-import { useWebSocket } from '../hooks/useWebSocket.js';
+import { useWebSocket } from './useWebSocket.js';
 
 export const useVoiceCommands = () => {
 	const ws = useWebSocket();

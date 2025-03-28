@@ -1,7 +1,6 @@
-// File: frontend/src/components/ConnectionBanner.tsx
+// File: frontend/src/react/components/ConnectionBanner.tsx
 
 import { useWebSocket } from '../hooks/useWebSocket.js';
-import '../styles/index.css';
 
 const ConnectionBanner = () => {
 	const { status } = useWebSocket();

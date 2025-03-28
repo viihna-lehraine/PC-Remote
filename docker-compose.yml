@@ -7,11 +7,17 @@ services:
         build: ./db
         container_name: pc-remote-db
         restart: on-failure
-        user: '0:0'
         environment:
             - POSTGRES_PASSWORD
+            - POSTGRES_INITDB_WALDR=/var/lib/postgresql/data/wal
+        secrets:
+            - vault_mgr_password
+        networks:
+            pc-remote-net:
+                ipv4_address: 172.18.0.3
         volumes:
-            - /home/viihna/Projects/pc-remote/secrets/certs/services/db:/var/lib/postgresql/certs:ro
+            - db-certs:/var/lib/postgresql/certs:rw
+            - /home/viihna/Projects/pc-remote/secrets/certs/services/db:/vault-certs:ro
             - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/var/lib/postgresql/ca:ro
             - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
             - /home/viihna/Projects/pc-remote/db/data/:/var/lib/postgresql/data
@@ -40,17 +46,22 @@ services:
                     '-p',
                     '4590'
                 ]
-            timeout: 3s
-            retries: 10
+            timeout: 15s
+            retries: 5
+            interval: 5s
         command: ['postgres', '-c', 'config_file=/etc/postgresql/postgresql.conf']
 
     nginx:
         build: ./nginx
         container_name: pc-remote-nginx
+        networks:
+            pc-remote-net:
+                ipv4_address: 172.18.0.4
         ports:
             - '192.168.50.10:444:443'
         restart: unless-stopped
         volumes:
+            - /vault/certs/nginx:/etc/ssl/certs/nginx:rw
             - /home/viihna/Projects/pc-remote/secrets/certs/services/nginx/:/etc/nginx/certs/:ro
             - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/etc/nginx/ca/:ro
             - /home/viihna/Projects/pc-remote/logs/nginx:/var/log/nginx
@@ -64,7 +75,10 @@ services:
     vault:
         build: ./vault
         user: '0:0'
-        restart: no
+        networks:
+            pc-remote-net:
+                ipv4_address: 172.18.0.2
+        restart: on-failure
         cap_add:
             - IPC_LOCK
         environment:
@@ -103,3 +117,18 @@ services:
             retries: 20
         extra_hosts:
             - 'pc-remote-db:192.168.50.10'
+
+networks:
+    pc-remote-net:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: '172.18.0.0/16'
+
+volumes:
+    db-certs:
+        name: pc-remote-db-certs
+
+secrets:
+    vault_mgr_password:
+        file: ./db/secrets/vault_mgr_password

@@ -9,5 +9,3 @@ BEGIN
 END
 $$;
 
--- set as default owner for future tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO viihna;

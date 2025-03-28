@@ -1,11 +1,12 @@
 // File: frontend/src/App.tsx
 
 import { useState, useEffect } from 'react';
-import Chat from './components/Chat.js';
-import { useWebSocket } from './hooks/useWebSocket.js';
-import VoiceCommandButton from './components/VoiceCommandButton.js';
-import ConnectionBanner from './components/ConnectionBanner.js';
-import { WebSocketProvider } from './components/WebSocketProvider.js';
+import Chat from './react/components/Chat.js';
+import { useWebSocket } from './react/hooks/useWebSocket.js';
+import VoiceCommandButton from './react/components/buttons/VoiceCommandButton.js';
+import ConnectionBanner from './react/components/ConnectionBanner.js';
+import { WebSocketProvider } from './react/components/WebSocketProvider.js';
+import FileBrowser from './react/components/FileBrowser.js';
 import './styles/index.css';
 
 const App = () => {
@@ -74,6 +75,7 @@ const App = () => {
 					</button>
 				</div>
 			</div>
+			<FileBrowser />
 			<VoiceCommandButton />
 			<Chat />
 		</div>

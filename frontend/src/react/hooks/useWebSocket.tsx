@@ -1,4 +1,4 @@
-// File: frontend/src/hooks/useWebSocket.ts
+// File: frontend/src/react/hooks/useWebSocket.ts
 
 import { useContext } from 'react';
 import { WebSocketContext } from '../context/WebSocketContext.js';

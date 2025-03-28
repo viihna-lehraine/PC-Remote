@@ -9,6 +9,20 @@ SERVICES=("db" "backend" "vault" "nginx")
 
 echo "Fixing cert file permissions under $ROOT_DIR"
 
+echo "Ensuring parent directories are world-executable for traversal..."
+
+PARENTS=(
+	"/home/viihna/Projects/pc-remote/secrets"
+	"/home/viihna/Projects/pc-remote/secrets/certs"
+	"/home/viihna/Projects/pc-remote/secrets/certs/services"
+)
+
+for dir in "${PARENTS[@]}"; do
+	if [ -d "$dir" ]; then
+		chmod o+x "$dir"
+	fi
+done
+
 for service in "${SERVICES[@]}"; do
 	DIR="$ROOT_DIR/$service"
 
