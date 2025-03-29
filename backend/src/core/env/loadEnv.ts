@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import { appMode } from './loadAppMode.js';
 import { absolutePaths } from '../../data/paths.js';
-import { parseIntStrict, parseString } from '../../utils/parse.js';
+import { parseIntStrict, parseString } from '../helpers/parse.js';
 
 let envPath: string;
 

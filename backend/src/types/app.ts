@@ -58,6 +58,13 @@ export interface EnvVars {
 	ROOT_CA_PATH: string;
 }
 
+export interface FileEntry {
+	name: string;
+	fullPath: string;
+	type: 'file' | 'directory';
+	mediaType?: 'audio' | 'image' | 'video';
+}
+
 export interface Flags {
 	USE_TLS: boolean;
 	USE_VAULT: boolean;
@@ -65,6 +72,8 @@ export interface Flags {
 }
 
 export type NodeEnv = 'dev' | 'prod';
+
+export type Role = 'admin' | 'trusted_user' | 'user' | 'guest';
 
 export interface SanitationUtils {
 	html(userInput: string): string;

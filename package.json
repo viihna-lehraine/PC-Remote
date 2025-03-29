@@ -14,12 +14,27 @@
 	},
 	"packageManager": "pnpm@10.6.5",
 	"dependencies": {
+		"argon2": "^0.41.1",
 		"concurrency": "^0.1.4",
 		"concurrently": "^9.1.2"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.21.0",
+		"@types/supertest": "^6.0.3",
+		"@types/ws": "^8.18.0",
+		"eslint": "^9.21.0",
+		"eslint-plugin-prettier": "^5.2.3",
+		"supertest": "^7.1.0",
+		"tsx": "^4.19.3",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.24.1",
+		"vite": "^5.4.15",
+		"vitest": "^1.2.0"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@swc/core",
+			"argon2",
 			"better-sqlite3",
 			"esbuild"
 		]

@@ -7,8 +7,10 @@ export type {
 	CachedValue,
 	Denylist,
 	EnvVars,
+	FileEntry,
 	Flags,
 	NodeEnv,
+	Role,
 	SanitationUtils,
 	SecureSessionPluginOptions,
 	VaultDBCredentials

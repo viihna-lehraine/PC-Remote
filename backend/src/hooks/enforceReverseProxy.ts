@@ -2,7 +2,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getViteStatus } from '../plugins/vitePing.js';
-import { isFromTrustedProxy } from '../utils/index.js';
+import { isFromTrustedProxy } from '../core/utils/index.js';
 import { appMode } from '../core/index.js';
 
 export const enforceReverseProxy = (app: FastifyInstance) => {

@@ -8,7 +8,6 @@ import securityHeaders from './security.js';
 import rateLimit from './rateLimit.js';
 import { FastifyInstance } from 'fastify';
 import registerSession from './session.js';
-import fsPlugin from './fileSystem.js';
 import { appMode } from '../core/index.js';
 
 export function initializePlugins(env: EnvVars, app: FastifyInstance): void {
@@ -16,5 +15,4 @@ export function initializePlugins(env: EnvVars, app: FastifyInstance): void {
 	app.register(securityHeaders);
 	app.register(rateLimit);
 	if (appMode !== 'dev') registerSession(app);
-	app.register(fsPlugin);
 }

@@ -1,7 +1,7 @@
 // File: backend/src/utils/sops.ts
 
 import { spawn } from 'node:child_process';
-import { env } from '../core/index.js';
+import { env } from '../index.js';
 
 export async function decryptSopsFile<T = unknown>(filepath: string): Promise<T> {
 	const jsonStr = await new Promise<string>((resolve, reject) => {

@@ -17,19 +17,22 @@
 
 ### 2. Nginx
 
--   Docker Network: pc-remote-net
+-   Network: pc-remote-net
     -   Docker IP: 172.18.0.4
     -   444:443
 
 ### 3. Database
 
--   Docker Network: pc-remote-net
+-   Users
+    -   Postgres
+        -   UID:GID 1010:1010
+-   Network: pc-remote-net
     -   Docker IP: 172.18.0.3
     -   4590:4590
     -   Note: _Will only accept connections from Vault container over mutual TLS_
 
 ### 4. Vault
 
--   Docker Network: pc-remote-net
+-   Network: pc-remote-net
     -   Docker IP: 172.18.0.2
         -   4425:4425

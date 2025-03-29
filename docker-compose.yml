@@ -7,6 +7,7 @@ services:
         build: ./db
         container_name: pc-remote-db
         restart: on-failure
+        user: '1010:1010'
         environment:
             - POSTGRES_PASSWORD
             - POSTGRES_INITDB_WALDR=/var/lib/postgresql/data/wal
@@ -61,7 +62,6 @@ services:
             - '192.168.50.10:444:443'
         restart: unless-stopped
         volumes:
-            - /vault/certs/nginx:/etc/ssl/certs/nginx:rw
             - /home/viihna/Projects/pc-remote/secrets/certs/services/nginx/:/etc/nginx/certs/:ro
             - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/etc/nginx/ca/:ro
             - /home/viihna/Projects/pc-remote/logs/nginx:/var/log/nginx
@@ -71,6 +71,26 @@ services:
               read_only: true
         extra_hosts:
             - 'host.docker.internal:host-gateway'
+
+    vault-proxy:
+        build: ./vault-proxy
+        container_name: pc-remote-vault-proxy
+    networks:
+        pc-remote-net:
+            ipv4_address: 172.18.0.4
+    ports:
+        - '192.168.50.10:445:443'
+    restart: unless-stopped
+    volumes:
+        - /home/viihna/Projects/pc-remote/secrets/certs/services/vault-proxy/:/etc/nginx/certs/:ro
+        - /home/viihna/Projects/pc-remote/secrets/certs/ca/root/:/etc/nginx/ca/:ro
+        - /home/viihna/Projects/pc-remote/logs/nginx:/var/log/nginx
+        - type: bind
+          source: /etc/ssl/projects/pc-remote/dhparam.pem
+          target: /etc/dhparam.pem
+          read_only: true
+    extra_hosts:
+        - 'host.docker.internal:host-gateway'
 
     vault:
         build: ./vault

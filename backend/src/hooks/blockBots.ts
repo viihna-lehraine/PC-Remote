@@ -5,7 +5,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import path from 'path';
 import fs from 'fs';
 import CIDRMatcher from 'cidr-matcher';
-import { tryReverseDNS } from '../utils/dns.js';
+import { tryReverseDNS } from '../core/utils/dns.js';
 import { fileURLToPath } from 'url';
 import { appMode } from '../core/index.js';
 

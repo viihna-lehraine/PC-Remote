@@ -1,7 +1,7 @@
 // File: backend/src/utils/proxy.ts
 
 import CIDRMatcher from 'cidr-matcher';
-import { env } from '../core/index.js';
+import { env } from '../index.js';
 
 const trustedCIDRs = [env.DOCKER_SUBNET_1, env.DOCKER_SUBNET_2];
 const matcher = new CIDRMatcher(trustedCIDRs);

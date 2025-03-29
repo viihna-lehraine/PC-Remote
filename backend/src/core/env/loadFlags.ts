@@ -3,7 +3,7 @@
 import { Flags } from '../../types/index.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import { parseBoolean } from '../../utils/parse.js';
+import { parseBoolean } from '../helpers/parse.js';
 import { appMode } from './loadAppMode.js';
 import { absolutePaths } from '../../data/paths.js';
 

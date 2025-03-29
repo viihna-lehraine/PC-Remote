@@ -5,7 +5,7 @@ import axios from 'axios';
 import { env } from '../core/index.js';
 import fs from 'fs/promises';
 import { Agent as HttpsAgent } from 'https';
-import { decryptSopsFile } from '../utils/index.js';
+import { decryptSopsFile } from '../core/utils/index.js';
 import path from 'path';
 import { flags } from '../core/index.js';
 
